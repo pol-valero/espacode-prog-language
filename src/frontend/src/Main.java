@@ -13,6 +13,7 @@ public class Main {
         while ((lexeme = cs.getNextLexeme()) != null) {
             if (!lexeme.isEmpty()) {
                 token = dictionary.findToken(lexeme);
+                System.out.println(token + " " +lexeme);
                 // TODO: Send the token and the value(lexeme) to backend now? :/
             }
         }

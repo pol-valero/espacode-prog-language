@@ -22,5 +22,9 @@
   {
     "token": "IDENTIFICADOR",
     "regex": "[a-zA-Z]*"
+  },
+  {
+    "token": "DELIMITADOR",
+    "regex": ";"
   }
 ]
