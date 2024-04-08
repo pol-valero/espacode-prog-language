@@ -1,0 +1,26 @@
+[
+  {
+    "token": "TIPO_ENTERO",
+    "regex": "entero"
+  },
+  {
+    "token": "TIPO_CARACTER",
+    "regex": "caracter"
+  },
+  {
+    "token": "VALOR_ENTERO",
+    "regex": "[0-9]+"
+  },
+  {
+    "token": "VALOR_CARACTER",
+    "regex": "'[a-zA-Z]'"
+  },
+  {
+    "token": "IGUAL_ASIGNACION",
+    "regex": "="
+  },
+  {
+    "token": "IDENTIFICADOR",
+    "regex": "[a-zA-Z]*"
+  }
+]
