@@ -14,7 +14,8 @@ public class CompilerController {
 
             tokenData = lexer.getNextToken();
 
-            System.out.print(tokenData.getLexeme() + ", ");
+            //System.out.print(tokenData.getLexeme() + ", ");
+            System.out.println(tokenData.getLexeme() + " -> " + tokenData.getToken());
         }
 
     }
