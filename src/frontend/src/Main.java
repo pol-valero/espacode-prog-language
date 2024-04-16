@@ -6,16 +6,16 @@ public class Main {
 
         Dictionary dictionary = new Dictionary();
 
-        CodeScanner cs = new CodeScanner("ejemplo.co");
+        Lexer lexer = new Lexer("example1.ps");
 
         String lexeme;
         String token;
-        while ((lexeme = cs.getNextLexeme()) != null) {
-            if (!lexeme.isEmpty()) {
+
+        while (lexer.peekNextLexeme() != null) {
+                lexeme = lexer.getNextLexeme();
                 token = dictionary.findToken(lexeme);
-                System.out.println(token + " " +lexeme);
-                // TODO: Send the token and the value(lexeme) to backend now? :/
-            }
+                //System.out.print(token + " " + lexeme + ", ");
+                System.out.print(lexeme + ", ");
         }
 
     }

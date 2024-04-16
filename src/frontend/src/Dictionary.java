@@ -26,7 +26,7 @@ public class Dictionary {
         Gson gson = new Gson();
         Type listType = new TypeToken<ArrayList<DictionaryEntry>>() {
         }.getType();
-        // TODO: Get from a db?
+
         String dictionaryFile = "dictionary.json";
 
         try {
