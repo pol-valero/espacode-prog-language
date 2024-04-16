@@ -10,9 +10,9 @@ public class Lexer {
     private static Scanner scanner;
     private static final LinkedList<String> queue = new LinkedList<>();
 
-    public Lexer(String filePath) {
+    public Lexer(String codeFilePath) {
         try {
-            scanner = new Scanner(new File(filePath));
+            scanner = new Scanner(new File(codeFilePath));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e); // TODO : Handle with errorHandler
         }
@@ -20,7 +20,7 @@ public class Lexer {
     }
 
     //We return the next lexeme and we remove it from the queue
-    public String getNextLexeme() {
+    private String getNextLexeme() {
         if (queue.isEmpty()) {
             if (scanner.hasNext()) {
                 String token = scanner.next();
@@ -42,7 +42,7 @@ public class Lexer {
     }
 
     //We return the next lexeme, but it stays in the queue
-    public String peekNextLexeme() {
+    private String peekNextLexeme() {
         if (queue.isEmpty()) {
             if (scanner.hasNext()) {
                 String token = scanner.next();
@@ -60,6 +60,31 @@ public class Lexer {
             }
         } else {
             return queue.peek();
+        }
+    }
+
+    public TokenData getNextToken() {
+        String lexeme = getNextLexeme();
+        String token;
+
+        if (lexeme != null) {
+            token = Dictionary.findToken(lexeme);
+            return new TokenData(lexeme, token);
+        } else {
+            return null;
+        }
+
+    }
+
+    public TokenData peekNextToken() {
+        String lexeme = peekNextLexeme();
+        String token;
+
+        if (lexeme != null) {
+            token = Dictionary.findToken(lexeme);
+            return new TokenData(lexeme, token);
+        } else {
+            return null;
         }
     }
 
