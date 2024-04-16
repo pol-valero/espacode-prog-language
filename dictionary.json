@@ -8,11 +8,19 @@
     "regex": "caracter"
   },
   {
-    "token": "VALOR_ENTERO",
-    "regex": "[0-9]+"
+    "token": "NUM_ENTERO",
+    "regex": "\\b\\d+\\b"
   },
   {
-    "token": "VALOR_CARACTER",
+    "token": "INICIO",
+    "regex": "inicio"
+  },
+  {
+    "token": "FIN",
+    "regex": "fin"
+  },
+  {
+    "token": "CARACTER_VALOR",
     "regex": "'[a-zA-Z]'"
   },
   {
@@ -20,8 +28,28 @@
     "regex": "="
   },
   {
-    "token": "IDENTIFICADOR",
-    "regex": "[a-zA-Z]*"
+    "token": "PARENTESIS_ABRIR",
+    "regex": "\\("
+  },
+  {
+    "token": "PARENTESIS_CERRAR",
+    "regex": "\\)"
+  },
+  {
+    "token": "IGUAL_COMPARAR",
+    "regex": "igual"
+  },
+  {
+    "token": "MAS",
+    "regex": "\\+"
+  },
+  {
+    "token": "MENOS",
+    "regex": "\\-"
+  },
+  {
+    "token": "ID",
+    "regex": "[a-zA-Z][a-zA-Z0-9]*"
   },
   {
     "token": "DELIMITADOR",

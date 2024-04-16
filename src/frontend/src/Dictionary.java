@@ -11,22 +11,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Dictionary {
-    private ArrayList<DictionaryEntry> dictionary;
+    static private ArrayList<DictionaryEntry> dictionary = new ArrayList<>();
 
     public Dictionary() {
-        dictionary = new ArrayList<>();
-        this.readDictionary();
+        //dictionary = new ArrayList<>();
+        //this.readDictionary();
     }
 
-    public ArrayList<DictionaryEntry> getDictionary() {
-        return dictionary;
-    }
-
-    private void readDictionary() {
+    public void readDictionary() {
         Gson gson = new Gson();
         Type listType = new TypeToken<ArrayList<DictionaryEntry>>() {
         }.getType();
-        // TODO: Get from a db?
+
         String dictionaryFile = "dictionary.json";
 
         try {
@@ -36,7 +32,7 @@ public class Dictionary {
         }
     }
 
-    public String findToken(String input) {
+    static public String findToken(String input) {
         Pattern pattern;
         Matcher matcher;
         for (DictionaryEntry entry : dictionary) {
