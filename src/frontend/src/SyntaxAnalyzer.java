@@ -19,7 +19,7 @@ public class SyntaxAnalyzer {
             //System.out.print(tokenData.getLexeme() + ", ");
             //System.out.println(tokenData.getLexeme() + " -> " + tokenData.getToken());
 
-
+            //TODO: CALL ALL THE FUNCTIONS TO CHECK SYNTAX HERE
 
         }
 
