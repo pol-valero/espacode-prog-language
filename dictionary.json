@@ -54,5 +54,9 @@
   {
     "token": "DELIMITADOR",
     "regex": ";"
+  },
+  {
+    "token": "ENDTOKEN",
+    "regex": "$"
   }
 ]

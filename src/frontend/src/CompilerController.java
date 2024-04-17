@@ -6,17 +6,12 @@ public class CompilerController {
 
     public void executeCompiler(String codeFilePath) {
 
-        TokenData tokenData;
 
         Lexer lexer = new Lexer(codeFilePath);
+        SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexer);
 
-        while (lexer.peekNextToken() != null) {
+        syntaxAnalyzer.syntaxAnalysis();
 
-            tokenData = lexer.getNextToken();
-
-            //System.out.print(tokenData.getLexeme() + ", ");
-            System.out.println(tokenData.getLexeme() + " -> " + tokenData.getToken());
-        }
 
     }
 
