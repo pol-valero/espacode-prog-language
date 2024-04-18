@@ -84,7 +84,7 @@ public class Lexer {
 
         if (lexeme != null) {
             token = Dictionary.findToken(lexeme);
-            System.out.println(lexeme + " -> " + token);
+            //System.out.println(lexeme + " -> " + token);
             return new TokenData(lexeme, token);
         } else {
             return null;

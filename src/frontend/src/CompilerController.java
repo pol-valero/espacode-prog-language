@@ -14,10 +14,10 @@ public class CompilerController {
 
         ParseTree parseTree = syntaxAnalyzer.syntaxAnalysis();
         if (syntaxAnalyzer.hasErrores()){
-            System.out.println("Errores de sintaxis");
+            System.out.println("\nErrores de sintaxis:\n");
             System.out.println(syntaxAnalyzer.getErrores());
         } else {
-            System.out.println("Sintaxis correcta");
+            System.out.println("\nSintaxis correcta\n");
             System.out.println(parseTree);
         }
 
