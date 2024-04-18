@@ -1,5 +1,13 @@
 [
   {
+    "token": "VACIO",
+    "regex": "vacio"
+  },
+  {
+    "token": "PRINCIPAL",
+    "regex": "principal"
+  },
+  {
     "token": "TIPO_ENTERO",
     "regex": "entero"
   },
@@ -48,15 +56,18 @@
     "regex": "\\-"
   },
   {
-    "token": "ID",
-    "regex": "[a-zA-Z][a-zA-Z0-9]*"
+    "token": "MULTIPLICACION",
+    "regex": "\\*"
   },
+  {
+    "token": "DIVISION",
+    "regex": "\\/"
+  }, {
+  "token": "ID",
+  "regex": "[a-zA-Z][a-zA-Z0-9]*"
+},
   {
     "token": "DELIMITADOR",
     "regex": ";"
-  },
-  {
-    "token": "ENDTOKEN",
-    "regex": "$"
   }
 ]
