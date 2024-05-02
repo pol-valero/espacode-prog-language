@@ -6,11 +6,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-public class Lexer {
+public class LexicAnalyzer {
     private static Scanner scanner;
     private static final LinkedList<String> queue = new LinkedList<>();
     private int line;
-    public Lexer(String codeFilePath) {
+    public LexicAnalyzer(String codeFilePath) {
         line = 0;
         try {
             scanner = new Scanner(new File(codeFilePath));

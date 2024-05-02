@@ -4,13 +4,13 @@ import frontend.src.exceptions.SyntaxException;
 import frontend.src.model.ParseTree;
 
 public class SyntaxAnalyzer {
-    private Lexer lexer;
+    private LexicAnalyzer lexicAnalyzer;
     //String currentToken;
 
-    private StringBuilder errores = new StringBuilder(); //TODO: Just launch exceptions and handle them in the controller? So that it will only show one error at a time?
+    private StringBuilder errors = new StringBuilder(); //TODO: Just launch exceptions and handle them in the controller? So that it will only show one error at a time?
 
-    public SyntaxAnalyzer(Lexer lexer) {
-        this.lexer = lexer;
+    public SyntaxAnalyzer(LexicAnalyzer lexicAnalyzer) {
+        this.lexicAnalyzer = lexicAnalyzer;
     }
 
     public ParseTree syntaxAnalysis() {
@@ -38,7 +38,7 @@ public class SyntaxAnalyzer {
             program.addChild(BLOQUE());
             return program;
         }catch (SyntaxException e) {
-            errores.append(e.getMessage());
+            errors.append(e.getMessage());
             return null;
         }
 
@@ -52,7 +52,7 @@ public class SyntaxAnalyzer {
             bloque.addChild( match("FIN"));
             return bloque;
         }catch (SyntaxException e) {
-            errores.append(e.getMessage());
+            errors.append(e.getMessage());
             return null;
         }
     }
@@ -61,7 +61,7 @@ public class SyntaxAnalyzer {
         TokenData token = null;
         do {
             try {
-                token = lexer.peekNextToken();
+                token = lexicAnalyzer.peekNextToken();
                 if (token.getToken().equals("TIPO_ENTERO") || token.getToken().equals("TIPO_CARACTER")) {
                     Subbloque.addChild(DECLARACION_VARIABLE());
                 }else if (token.getToken().equals("ID")) {
@@ -69,10 +69,10 @@ public class SyntaxAnalyzer {
                 }else if(token.getToken().equals("FIN")) {
                     break;
                 }else{
-                    token = lexer.getNextToken();
+                    token = lexicAnalyzer.getNextToken();
                 }
             } catch (SyntaxException e) {
-                errores.append(e.getMessage());
+                errors.append(e.getMessage());
             }
         }while (token != null);
         return Subbloque;
@@ -90,7 +90,7 @@ public class SyntaxAnalyzer {
         declaracion.addChild(TIPO());
         declaracion.addChild(match("ID"));
 
-        TokenData token = lexer.peekNextToken();
+        TokenData token = lexicAnalyzer.peekNextToken();
         if (token.getToken().equals("IGUAL_ASIGNACION")) {
             declaracion.addChild(IGUALACION());
             declaracion.addChild(match("DELIMITADOR"));
@@ -108,7 +108,7 @@ public class SyntaxAnalyzer {
     public ParseTree EXPRESION() throws SyntaxException{
         ParseTree expresion = new ParseTree("Expresion");
         expresion.addChild(PRODUCTO());
-        TokenData token = lexer.peekNextToken();
+        TokenData token = lexicAnalyzer.peekNextToken();
         if (token.getToken().equals("MAS")) {
             expresion.addChild(match("MAS"));
             expresion.addChild(EXPRESION());
@@ -121,7 +121,7 @@ public class SyntaxAnalyzer {
     public ParseTree PRODUCTO() throws SyntaxException{
         ParseTree producto = new ParseTree("Producto");
         producto.addChild(VALOR());
-        TokenData token = lexer.peekNextToken();
+        TokenData token = lexicAnalyzer.peekNextToken();
         if (token.getToken().equals("MULTIPLICACION")){
             producto.addChild(match("MULTIPLICACION"));
             producto.addChild(PRODUCTO());
@@ -132,7 +132,7 @@ public class SyntaxAnalyzer {
         return producto;
     }
     public ParseTree VALOR() throws SyntaxException{
-        TokenData token = lexer.peekNextToken();
+        TokenData token = lexicAnalyzer.peekNextToken();
         if (token.getToken().equals("ID")) {
             match("ID");
             return new ParseTree("Valor", token.getLexeme());
@@ -140,11 +140,11 @@ public class SyntaxAnalyzer {
             match("NUM_ENTERO");
             return new ParseTree("Valor", token.getLexeme());
         } else {
-            throw new SyntaxException("Error Line " + lexer.getLineNumber() + ":\n\t" + "Error de sintaxis: Se esperaba 'IDENTIFICADOR' o 'NUM_ENTERO' pero se encontró '" + token.getToken() + "'\n");
+            throw new SyntaxException("Error Line " + lexicAnalyzer.getLineNumber() + ":\n\t" + "Error de sintaxis: Se esperaba 'IDENTIFICADOR' o 'NUM_ENTERO' pero se encontró '" + token.getToken() + "'\n");
         }
     }
     public ParseTree TIPO() throws SyntaxException{
-        TokenData token = lexer.peekNextToken();
+        TokenData token = lexicAnalyzer.peekNextToken();
         if (token.getToken().equals("TIPO_ENTERO")) {
             match("TIPO_ENTERO");
             return new ParseTree("Tipo", "int");
@@ -152,30 +152,30 @@ public class SyntaxAnalyzer {
             match("TIPO_CARACTER");
             return new ParseTree("Tipo", "char");
         } else {
-            errores.append("Error Line " + lexer.getLineNumber() + ":\n\t" + "Error de sintaxis: Se esperaba 'int' o 'char' pero se encontró '" + token.getToken() + "'\n");
+            errors.append("Error Line " + lexicAnalyzer.getLineNumber() + ":\n\t" + "Error de sintaxis: Se esperaba 'int' o 'char' pero se encontró '" + token.getToken() + "'\n");
             return null;
         }
     }
     private ParseTree match(String expectedToken) throws SyntaxException{
-        TokenData tokenData = lexer.getNextToken();
+        TokenData tokenData = lexicAnalyzer.getNextToken();
 
         if (tokenData == null) {
-            throw new SyntaxException("Error Line " + lexer.getLineNumber() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró fin de archivo\n");
+            throw new SyntaxException("Error Line " + lexicAnalyzer.getLineNumber() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró fin de archivo\n");
         }
 
         if (tokenData.getToken().equals(expectedToken)) {
             return new ParseTree(expectedToken, tokenData.getLexeme());
         }else{
-            throw new SyntaxException("Error Line " + lexer.getLineNumber() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + tokenData.getToken() + "'\n");
+            throw new SyntaxException("Error Line " + lexicAnalyzer.getLineNumber() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + tokenData.getToken() + "'\n");
         }
     }
 
-    public StringBuilder getErrores() {
-        return errores;
+    public StringBuilder getErrors() {
+        return errors;
     }
 
     public boolean hasErrores() {
-        return errores.length() > 0;
+        return errors.length() > 0;
     }
 
     /*private void match(String expectedToken) {

@@ -1,0 +1,28 @@
+entero fibonacci(entero var_numero) inicio
+	entero k = 0;
+	entero fibonacci = 1;
+	entero aux;
+	entero fibonacciPrevio = 1;
+
+	si (var_numero menor_o_igual 1) inicio
+		retorno var_numero;
+	fin
+
+	durante (k = 2; k menor var_numero; k++) inicio
+		aux = fibonacci;
+		fibonacci = fibonacci + fibonacciPrevio;
+		fibonacciPrevio = aux;
+	fin
+
+	retorno fibonacci;
+
+fin
+
+vacio principal() inicio
+
+	entero numero = 10;
+	entero resultado;
+
+	resultado = fibonacci(numero)
+
+fin
