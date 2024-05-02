@@ -10,7 +10,17 @@ public class CompilerController {
 
 
         LexicAnalyzer lexicAnalyzer = new LexicAnalyzer(codeFilePath);
-        SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexicAnalyzer);
+
+        TokenData tokenData;
+
+        while (lexicAnalyzer.peekNextToken() != null) {
+
+            tokenData = lexicAnalyzer.getNextToken();
+
+            System.out.println(tokenData.getLexeme() + " -> " + tokenData.getToken());
+         }
+
+        /*SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexicAnalyzer);
 
         ParseTree parseTree = syntaxAnalyzer.syntaxAnalysis();
         if (syntaxAnalyzer.hasErrores()){
@@ -19,7 +29,7 @@ public class CompilerController {
         } else {
             System.out.println("\nSintaxis correcta\n");
             System.out.println(parseTree);
-        }
+        }*/
 
     }
 

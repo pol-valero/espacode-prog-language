@@ -27,7 +27,6 @@ public class LexicAnalyzer {
                 String token = scanner.next();
                 line += 1; //TODO: Fix this. Currently "line" is the number of tokens read, not the actual line number.
 
-                //TODO: identify '(a' as a word. This is not a priority, first we will only implement basic stuff like integers, sum...
                 //To adapt into our system we use a queue to get all tokens split.
                 String[] splitChars = token.split("(?=[{}();+\\-*/])|(?<=[{}();+\\-*/])");
                 Collections.addAll(queue, splitChars);
@@ -55,10 +54,16 @@ public class LexicAnalyzer {
         if (queue.isEmpty()) {
             if (scanner.hasNext()) {
                 String token = scanner.next();
-                //TODO: identify '(a' as a word. This is not a priority, first we will only implement basic stuff like integers, sum...
-                //To adapt into our system we use a queue to get all tokens split.
-                String[] splitChars = token.split("(?=[{}();+\\-*/])|(?<=[{}();+\\-*/])");
-                Collections.addAll(queue, splitChars);
+
+                //Check if token is a negative number. If it is, we avoid splitting the token by the "-" sign.
+                if (token.contains("-") && token.length() > 1 && Character.isDigit(token.charAt(1)) ) {
+                    String[] splitChars = token.split("(?=[{}();+*/])|(?<=[{}();+*/])");    //We avoid splitting by "-"
+                    Collections.addAll(queue, splitChars);
+                } else {
+                    //To adapt into our system we use a queue to get all tokens split.
+                    String[] splitChars = token.split("(?=[{}();+\\-*/])|(?<=[{}();+\\-*/])");
+                    Collections.addAll(queue, splitChars);
+                }
                 if (!queue.isEmpty()) {
                     return queue.peek();
                 } else {
