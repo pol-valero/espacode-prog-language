@@ -17,7 +17,7 @@ public class CompilerController {
 
             tokenData = lexicAnalyzer.getNextToken();
 
-            System.out.println(tokenData.getLexeme() + " -> " + tokenData.getToken());
+            System.out.println("Line: " + tokenData.getLine() + " - " + tokenData.getLexeme() + " -> " + tokenData.getToken());
          }
 
         /*SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexicAnalyzer);

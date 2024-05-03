@@ -9,14 +9,68 @@ import java.util.Scanner;
 public class LexicAnalyzer {
     private static Scanner scanner;
     private static final LinkedList<String> queue = new LinkedList<>();
-    private int line;
+    private int lineNumCounter;
+    private int currentWordLineNum;
+
     public LexicAnalyzer(String codeFilePath) {
-        line = 0;
+        lineNumCounter = 1;
         try {
             scanner = new Scanner(new File(codeFilePath));
+            scanner.useDelimiter("");   //We are going to read char by char
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e); // TODO : Handle with errorHandler
         }
+
+    }
+
+    //Reads next word (a word is separated by spaces or new lines). If a new line is found while reading the word, we increase the line counter. It returns "" if there are no more words.
+    private String getScannerNext() {
+
+        String next;
+        StringBuilder token = new StringBuilder();
+        boolean wordRead = false;
+        boolean newLineInWordFound = false;
+
+        do {
+
+            if (!scanner.hasNext()) {
+                break;
+            }
+
+            next = scanner.next();  //We are reading char by char (in order to be able to read the \n char)
+
+            if (next.contains("\n")) {
+                lineNumCounter++;
+
+                //System.out.println("Line: " + line);
+                if (wordRead) {
+                    newLineInWordFound = true;
+                    break;
+                }
+
+            }else if (next.equals(" ") || next.equals("\t")) {
+                if (wordRead) {
+                    break;
+                }
+            } else {
+                wordRead = true;
+                token.append(next);
+
+            }
+
+        } while (true);
+
+
+        if (newLineInWordFound) {
+            currentWordLineNum = lineNumCounter - 1;
+
+        } else {
+            currentWordLineNum = lineNumCounter;
+        }
+
+        //System.out.println("Line: " + currentWordLineNum + " Token: " + token.toString());
+        return token.toString();
 
     }
 
@@ -24,12 +78,18 @@ public class LexicAnalyzer {
     private String getNextLexeme() {
         if (queue.isEmpty()) {
             if (scanner.hasNext()) {
-                String token = scanner.next();
-                line += 1; //TODO: Fix this. Currently "line" is the number of tokens read, not the actual line number.
+                //String token = scanner.next();
+                String token = getScannerNext();
 
-                //To adapt into our system we use a queue to get all tokens split.
-                String[] splitChars = token.split("(?=[{}();+\\-*/])|(?<=[{}();+\\-*/])");
-                Collections.addAll(queue, splitChars);
+                //Check if token is a negative number. If it is, we avoid splitting the token by the "-" sign.
+                if (token.contains("-") && token.length() > 1 && Character.isDigit(token.charAt(1)) ) {
+                    String[] splitChars = token.split("(?=[{}();+*/])|(?<=[{}();+*/])");    //We avoid splitting by "-"
+                    Collections.addAll(queue, splitChars);
+                } else {
+                    //To adapt into our system we use a queue to get all tokens split.
+                    String[] splitChars = token.split("(?=[{}();+\\-*/])|(?<=[{}();+\\-*/])");
+                    Collections.addAll(queue, splitChars);
+                }
                 if (!queue.isEmpty()) {
                     return queue.poll();
                 } else {
@@ -53,7 +113,8 @@ public class LexicAnalyzer {
     private String peekNextLexeme() {
         if (queue.isEmpty()) {
             if (scanner.hasNext()) {
-                String token = scanner.next();
+                //String token = scanner.next();
+                String token = getScannerNext();
 
                 //Check if token is a negative number. If it is, we avoid splitting the token by the "-" sign.
                 if (token.contains("-") && token.length() > 1 && Character.isDigit(token.charAt(1)) ) {
@@ -89,8 +150,7 @@ public class LexicAnalyzer {
 
         if (lexeme != null) {
             token = Dictionary.findToken(lexeme);
-            //System.out.println(lexeme + " -> " + token);
-            return new TokenData(lexeme, token);
+            return new TokenData(lexeme, token, currentWordLineNum);
         } else {
             return null;
         }
@@ -101,16 +161,17 @@ public class LexicAnalyzer {
         String lexeme = peekNextLexeme();
         String token;
 
-        if (lexeme != null) {
+        if (lexeme != null && !lexeme.equals("")) {
             token = Dictionary.findToken(lexeme);
-            return new TokenData(lexeme, token);
+            return new TokenData(lexeme, token, currentWordLineNum);
         } else {
             return null;
         }
     }
 
+    //TODO: Remove. Substituted by "line" field in TokenData
     public int getLineNumber() {
-        return line;
+        return lineNumCounter;
     }
 
 }
