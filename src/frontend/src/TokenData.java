@@ -29,6 +29,10 @@ public class TokenData {
         return line;
     }
 
+    public boolean equals(String token) {
+        return this.token.equals(token);
+    }
+
 }
 
 

@@ -5,7 +5,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String codeFilePath = "fibonacciNonRecWhile.ps";
+        String codeFilePath = "shortTest.ps";
 
         Dictionary dictionary = new Dictionary();
         dictionary.readDictionary();

@@ -8,7 +8,7 @@ public class ParseTree {
     private String value;
     private List<ParseTree> children;
 
-    //TODO: Add "node" class and make the parseTree have a "left" and "right" child (order of the children is important. ex.- to do operations)?
+    //TODO: Add "node" class (order of the children is important. ex.- to do operations)?
 
     public ParseTree(String type) {
         this.type = type;
