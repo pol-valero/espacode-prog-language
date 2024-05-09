@@ -28,10 +28,6 @@
     "regex": "^fin$"
   },
   {
-    "token": "VALOR_CARACTER",
-    "regex": "'[a-zA-Z]'"
-  },
-  {
     "token": "VALOR_ENTERO",
     "regex": "^-?\\d+$"
   },
@@ -102,6 +98,10 @@
   {
     "token": "PUNTO_Y_COMA",
     "regex": ";"
+  },
+  {
+    "token": "COMILLA",
+    "regex": "'"
   },
   {
   "token": "ID",

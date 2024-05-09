@@ -13,7 +13,7 @@ public class CompilerController {
 
         /*TokenData tokenData;
 
-        while (lexicAnalyzer.peekNextToken() != null) {
+        while (!lexicAnalyzer.peekNextToken().equals("EOF")) {
 
             tokenData = lexicAnalyzer.getNextToken();
 

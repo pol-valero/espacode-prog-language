@@ -17,7 +17,7 @@ public class SyntaxAnalyzer {
 
         currentToken = lexicAnalyzer.getNextToken();
         codigo();
-        //match("EOF");
+        match("EOF");
         //return codigo();
         return null;
     }
@@ -52,8 +52,10 @@ public class SyntaxAnalyzer {
     private void tipoFuncion() {
         if (currentToken.equals("TIPO_ENTERO") || currentToken.equals("TIPO_DECIMAL") || currentToken.equals("TIPO_CARACTER")) {
             tipo();
-        } else {
+        } else if (currentToken.equals("VACIO")){
             match("VACIO");
+        } else {
+            error("TIPO_ENTERO, TIPO_DECIMAL, TIPO_CARACTER o VACIO");
         }
     }
 
@@ -61,9 +63,9 @@ public class SyntaxAnalyzer {
     private void tipo() {
         if (currentToken.equals("TIPO_ENTERO") || currentToken.equals("TIPO_DECIMAL") || currentToken.equals("TIPO_CARACTER")) {
             match(currentToken.getToken());
-        } /*else {
-            error();
-        }*/
+        } else {
+            error("TIPO_ENTERO, TIPO_DECIMAL o TIPO_CARACTER");
+        }
     }
 
     // Production for <PARAMETROS_DECLARACION_FUNCION>
@@ -153,10 +155,31 @@ public class SyntaxAnalyzer {
     private void asignacionVariablePrime() {
         if (currentToken.equals("ID") || currentToken.equals("VALOR_ENTERO") || currentToken.equals("VALOR_DECIMAL") || currentToken.equals("PARENTESIS_ABRIR")) {
             expresion();
-        } else if (currentToken.equals("VALOR_CARACTER")) {
-            match("VALOR_CARACTER");
+        } else if (currentToken.equals("COMILLA")) {
+            caracter();
+        } else {
+            error("ID, VALOR_ENTERO, VALOR_DECIMAL, VALOR_CARACTER, PARENTESIS_ABRIR o COMILLA");
         }
     }
+
+    // Production for <CARACTER>
+    private void caracter() {
+        match("COMILLA");
+        caracterPrime();
+        match("COMILLA");
+    }
+
+    // Production for <CARACTER'>
+    private void caracterPrime() {
+        if (currentToken.equals("ID")) {
+            match("ID");
+        } else if(currentToken.equals("VALOR_ENTERO")) {
+            match("VALOR_ENTERO");
+        } else {
+            error("letras o numeros");
+        }
+    }
+
 
 
     // Production for <EXPRESION>
@@ -200,9 +223,9 @@ public class SyntaxAnalyzer {
             match("PARENTESIS_ABRIR");
             expresion();
             match("PARENTESIS_CERRAR");
-        } /*else {
-            error();
-        }*/
+        } else {
+            error("ID, VALOR_ENTERO, VALOR_DECIMAL o PARENTESIS_ABRIR");
+        }
     }
 
     // Production for <LLAMADA_FUNCION>
@@ -266,6 +289,8 @@ public class SyntaxAnalyzer {
         if (currentToken.equals("MAYOR") || currentToken.equals("MENOR") || currentToken.equals("MAYOR_O_IGUAL") || currentToken.equals("MENOR_O_IGUAL") || currentToken.equals("IGUAL_COMPARACION")) {
             match(currentToken.getToken());
             factor();
+        } else {
+            error("MAYOR, MENOR, MAYOR_O_IGUAL, MENOR_O_IGUAL o IGUAL_COMPARACION");
         }
 
     }
