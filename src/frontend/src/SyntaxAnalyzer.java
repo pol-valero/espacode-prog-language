@@ -3,6 +3,10 @@ package frontend.src;
 import frontend.src.exceptions.SyntaxException;
 import frontend.src.model.ParseTree;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class SyntaxAnalyzer {
     private LexicAnalyzer lexicAnalyzer;
     TokenData currentToken;
@@ -16,36 +20,40 @@ public class SyntaxAnalyzer {
     public ParseTree syntaxAnalysis() {
 
         currentToken = lexicAnalyzer.getNextToken();
-        codigo();
+        codigo(List.of("EOF"));
         match("EOF");
         //return codigo();
         return null;
     }
 
     // Production for <CODIGO>
-    private void codigo() {
+    private void codigo(List<String> followers) {
 
-        funciones();
-        principal();
+        //copy followers to new list
+        List<String> funcionesFollowers = new ArrayList<>(followers);
+        funcionesFollowers.add("PRINCIPAL");
+
+        funciones(funcionesFollowers);
+        principal(followers);
 
     }
 
     // Production for <FUNCIONES>
-    private void funciones() {
+    private void funciones(List<String> followers) {
         if (currentToken.equals("TIPO_ENTERO") || currentToken.equals("TIPO_DECIMAL") || currentToken.equals("TIPO_CARACTER") || currentToken.equals("VACIO")) {
-            funcion();
-            funciones();
+            funcion(followers);
+            funciones(followers);
         }
     }
 
     // Production for <FUNCION>
-    private void funcion() {
+    private void funcion(List<String> followers) {
         tipoFuncion();
         match("ID");
         match("PARENTESIS_ABRIR");
         parametrosDeclaracionFuncion();
         match("PARENTESIS_CERRAR");
-        bloque();
+        bloque(followers);
     }
 
     // Production for <TIPO_FUNCION>
@@ -88,65 +96,77 @@ public class SyntaxAnalyzer {
     }
 
     // Production for <BLOQUE>
-    private void bloque() {
+    private void bloque(List<String> followers) {
+
+        List<String> subbloqueFollowers = new ArrayList<>(followers);
+        subbloqueFollowers.add("FIN");
+
         match("INICIO");
-        subbloque();
+        subbloque(subbloqueFollowers);
         match("FIN");
     }
 
     // Production for <SUBBLOQUE>
-    private void subbloque() {
+    private void subbloque(List<String> followers) {
+
+        List<String> sentenciaSubbloqueFollowers = new ArrayList<>(followers);
+        sentenciaSubbloqueFollowers.addAll(Arrays.asList("TIPO_ENTERO", "TIPO_DECIMAL", "TIPO_CARACTER", "ID", "SI", "MIENTRAS", "RETORNO"));
+
         if (currentToken.equals("TIPO_ENTERO") || currentToken.equals("TIPO_DECIMAL") || currentToken.equals("TIPO_CARACTER") ||
-                currentToken.equals("ID") || currentToken.equals("SI") || currentToken.equals("MIENTRAS") || currentToken.equals("RETORNO") ) {
-            sentenciaSubbloque();
-            subbloque();
+                currentToken.equals("ID") || currentToken.equals("SI") || currentToken.equals("MIENTRAS") || currentToken.equals("RETORNO")) {
+            sentenciaSubbloque(sentenciaSubbloqueFollowers);
+            subbloque(followers);
         }
     }
 
     // Production for <SENTENCIA_SUBBLOQUE>
-    private void sentenciaSubbloque() {
+    private void sentenciaSubbloque(List<String> followers) {
+
         if (currentToken.equals("TIPO_ENTERO") || currentToken.equals("TIPO_DECIMAL") || currentToken.equals("TIPO_CARACTER")) {
-            declaracionVariable();
+            declaracionVariable(followers);
         } else if (currentToken.equals("ID")) {
             match("ID");
-            sentenciaIDsubbloque();
+            sentenciaIDsubbloque(followers);
         } else if (currentToken.equals("MIENTRAS")) {
-            mientrasExpresion();
+            mientrasExpresion(followers);
         } else if (currentToken.equals("SI")) {
-            siExpresion();
+            siExpresion(followers);
         } else if (currentToken.equals("RETORNO")) {
             retornoExpresion();
         }
     }
 
     // Production for <DECLARACION_VARIABLE>
-    private void declaracionVariable() {
+    private void declaracionVariable(List<String> followers) {
         tipo();
         match("ID");
-        declaracionVariablePrime();
+        declaracionVariablePrime(followers);
     }
 
     // Production for <DECLARACION_VARIABLE'>
-    private void declaracionVariablePrime() {
+    private void declaracionVariablePrime(List<String> followers) {
+
+
         if (currentToken.equals("IGUAL_ASIGNACION")) {
-            asignacionVariable();
+            asignacionVariable(followers);
         } else {
-            match("PUNTO_Y_COMA");
+            match("PUNTO_Y_COMA", followers);
         }
     }
 
     // Production for <SENTENCIA_ID_SUBBLOQUE>
-    private void sentenciaIDsubbloque() {
+    private void sentenciaIDsubbloque(List<String> followers) {
         if (currentToken.equals("IGUAL_ASIGNACION")) {
-            asignacionVariable();
+            asignacionVariable(followers);
         } else {
             llamadaFuncion();
+            match("PUNTO_Y_COMA");
         }
     }
 
     // Production for <ASIGNACION_VARIABLE>
-    private void asignacionVariable() {
-        match("IGUAL_ASIGNACION");
+    private void asignacionVariable(List<String> followers) {
+        match("IGUAL_ASIGNACION", followers);
         asignacionVariablePrime();
         match("PUNTO_Y_COMA");
     }
@@ -270,12 +290,12 @@ public class SyntaxAnalyzer {
     }
 
     // Production for <MIENTRAS_EXPRESION>
-    private void mientrasExpresion() {
+    private void mientrasExpresion(List<String> followers) {
         match("MIENTRAS");
         match("PARENTESIS_ABRIR");
         comparacion();
         match("PARENTESIS_CERRAR");
-        bloque();
+        bloque(followers);
     }
 
     // Production for <COMPARACION>
@@ -296,31 +316,35 @@ public class SyntaxAnalyzer {
     }
 
     // Production for <SI_EXPRESION>
-    private void siExpresion() {
+    private void siExpresion(List<String> followers) {
+
+        List<String> bloqueFollowers = new ArrayList<>(followers);
+        bloqueFollowers.add("SINO");
+
         match("SI");
         match("PARENTESIS_ABRIR");
         comparacion();
         match("PARENTESIS_CERRAR");
-        bloque();
-        sinoExpresion();
+        bloque(bloqueFollowers);
+        sinoExpresion(followers);
     }
 
     // Production for <SINO_EXPRESION>
-    private void sinoExpresion() {
+    private void sinoExpresion(List<String> followers) {
         if (currentToken.equals("SINO")) {
             match("SINO");
-            bloque();
+            bloque(followers);
         }
     }
 
     // Production for <PRINCIPAL>
-    private void principal() {
-        match("PRINCIPAL");
+    private void principal(List<String> followers) {
+
+        match("PRINCIPAL", followers);
         match("PARENTESIS_ABRIR");
         match("PARENTESIS_CERRAR");
-        bloque();
+        bloque(followers);
     }
-
 
     private void match(String expectedToken) {
 
@@ -332,15 +356,40 @@ public class SyntaxAnalyzer {
 
     }
 
+    private void match(String expectedToken, List<String> followers) {
+
+        if (currentToken.equals(expectedToken)){
+            currentToken = lexicAnalyzer.getNextToken();
+        } else {
+            error(expectedToken, followers);
+        }
+
+    }
+
+    private void error(String expectedToken, List<String> followers) {
+
+        errors.append("Error Line " + currentToken.getLine() + ":\n\t" + "Error de sintaxis1: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken() + "'\n");
+
+        skipTo(List.of(expectedToken), followers);
+
+        if (currentToken.equals(expectedToken)) {
+            currentToken = lexicAnalyzer.getNextToken();
+        }
+
+    }
+
     private void error(String expectedToken) {
 
-        //throw new SyntaxException("Error Line " + currentToken.getLine() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken() + "'\n");
-        errors.append("Error Line " + currentToken.getLine() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken() + "'\n");
+        errors.append("Error Line " + currentToken.getLine() + ":\n\t" + "Error de sintaxis2: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken() + "'\n");
 
-        /*while (!currentToken.equals("PUNTO_Y_COMA") && !currentToken.equals("FIN") ) {
+    }
+
+    private void skipTo(List<String> starters, List<String> follows) {
+        while (!follows.contains(currentToken.getToken()) && !starters.contains(currentToken.getToken())) {
+
             currentToken = lexicAnalyzer.getNextToken();
-        }*/
 
+        }
     }
 
     public StringBuilder getErrors() {
