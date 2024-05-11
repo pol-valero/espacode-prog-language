@@ -112,6 +112,8 @@ public class SyntaxAnalyzer {
         List<String> sentenciaSubbloqueFollowers = new ArrayList<>(followers);
         sentenciaSubbloqueFollowers.addAll(Arrays.asList("TIPO_ENTERO", "TIPO_DECIMAL", "TIPO_CARACTER", "ID", "SI", "MIENTRAS", "RETORNO"));
 
+        handleSubbloqueSpecificCases();
+
         if (currentToken.equals("TIPO_ENTERO") || currentToken.equals("TIPO_DECIMAL") || currentToken.equals("TIPO_CARACTER") ||
                 currentToken.equals("ID") || currentToken.equals("SI") || currentToken.equals("MIENTRAS") || currentToken.equals("RETORNO")) {
             sentenciaSubbloque(sentenciaSubbloqueFollowers);
@@ -158,9 +160,11 @@ public class SyntaxAnalyzer {
     private void sentenciaIDsubbloque(List<String> followers) {
         if (currentToken.equals("IGUAL_ASIGNACION")) {
             asignacionVariable(followers);
-        } else {
+        } else if (currentToken.equals("PARENTESIS_ABRIR")) {
             llamadaFuncion();
             match("PUNTO_Y_COMA");
+        } else {
+            error("IGUAL_ASIGNACION o PARENTESIS_ABRIR", followers);
         }
     }
 
@@ -381,6 +385,26 @@ public class SyntaxAnalyzer {
     private void error(String expectedToken) {
 
         errors.append("Error Line " + currentToken.getLine() + ":\n\t" + "Error de sintaxis2: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken() + "'\n");
+
+    }
+
+
+    private void handleSubbloqueSpecificCases() {
+        //Possible cases to handle when a statement in a subbloque is finished and the next one is about to start (if it exists)
+        //Specific case to handle extra ";" at the end of the subbloque, and continue with the next subbloque if it exists.
+        //Specific case to handle extra independent numbers at the end of the subbloque, and continue with the next subbloque if it exists...
+
+        //Here we only handle the errors that happen when just starting a new subbloque (if an error happens in the middle of a subbloque, it will be handled elsewhere more appropriately)
+
+        List<String> tokensToCheck = Arrays.asList("PUNTO_Y_COMA", "VALOR_ENTERO", "VALOR_DECIMAL");
+
+        for (String token : tokensToCheck) {
+            // Check if currentToken matches the token
+            while (currentToken.equals(token)) {
+                error("TIPO_ENTERO, TIPO_DECIMAL, TIPO_CARACTER, ID, SI, MIENTRAS o RETORNO");
+                match(token);
+            }
+        }
 
     }
 
