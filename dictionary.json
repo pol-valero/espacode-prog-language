@@ -60,6 +60,14 @@
     "regex": "^menor_o_igual$"
   },
   {
+    "token": "MAYOR",
+    "regex": "^mayor$"
+  },
+  {
+    "token": "MENOR",
+    "regex": "^menor$"
+  },
+  {
     "token": "MAS",
     "regex": "\\+"
   },

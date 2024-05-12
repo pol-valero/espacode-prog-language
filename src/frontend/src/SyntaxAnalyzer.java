@@ -295,26 +295,30 @@ public class SyntaxAnalyzer {
 
     // Production for <MIENTRAS_EXPRESION>
     private void mientrasExpresion(List<String> followers) {
+
+        List<String> comparacionFollowers = new ArrayList<>(followers);
+        comparacionFollowers.add("PARENTESIS_CERRAR");
+
         match("MIENTRAS");
         match("PARENTESIS_ABRIR");
-        comparacion();
+        comparacion(comparacionFollowers);
         match("PARENTESIS_CERRAR");
         bloque(followers);
     }
 
     // Production for <COMPARACION>
-    private void comparacion() {
-        match("ID");
-        comparacionPrime();
+    private void comparacion(List<String> followers) {
+        match("ID", followers);
+        comparacionPrime(followers);
     }
 
     // Production for <COMPARACION'>
-    private void comparacionPrime() {
+    private void comparacionPrime(List<String> followers) {
         if (currentToken.equals("MAYOR") || currentToken.equals("MENOR") || currentToken.equals("MAYOR_O_IGUAL") || currentToken.equals("MENOR_O_IGUAL") || currentToken.equals("IGUAL_COMPARACION")) {
-            match(currentToken.getToken());
+            match(currentToken.getToken(), followers);
             factor();
         } else {
-            error("MAYOR, MENOR, MAYOR_O_IGUAL, MENOR_O_IGUAL o IGUAL_COMPARACION");
+            error("MAYOR, MENOR, MAYOR_O_IGUAL, MENOR_O_IGUAL o IGUAL_COMPARACION", followers);
         }
 
     }
@@ -325,9 +329,12 @@ public class SyntaxAnalyzer {
         List<String> bloqueFollowers = new ArrayList<>(followers);
         bloqueFollowers.add("SINO");
 
+        //List<String> comparacionFollowers = new ArrayList<>(followers);
+        //comparacionFollowers.add("PARENTESIS_CERRAR");
+
         match("SI");
         match("PARENTESIS_ABRIR");
-        comparacion();
+        comparacion(List.of("PARENTESIS_CERRAR"));
         match("PARENTESIS_CERRAR");
         bloque(bloqueFollowers);
         sinoExpresion(followers);
