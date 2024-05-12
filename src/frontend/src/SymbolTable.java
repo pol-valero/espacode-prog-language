@@ -9,17 +9,33 @@ class SymbolTable {
         symbolTable = new HashMap<String, SymbolTableEntry>();
     }
 
-    public void addVariableEntry(String name, String type) {
-        SymbolTableEntry entry = new SymbolTableEntry(name, type);
-        symbolTable.put(name, entry);
+    public void addVariableEntry(String key, String type, int line) {
+        SymbolTableEntry entry = new SymbolTableEntry(key, type, line);
+        try{
+            symbolTable.put(key, entry);
+        } catch (Exception e){
+            String error = "ERROR line " + line + ": " + "the id \"" + key + "\" is already declared.\n";
+            throwError(error);
+        }
     }
 
-    public void addFunctionEntry(String name, String returnType) {
-        SymbolTableEntry entry = new SymbolTableEntry(name, returnType, true);
-        symbolTable.put(name, entry);
+    public void addFunctionEntry(String type, String key, int line) {
+        SymbolTableEntry entry = new SymbolTableEntry(key, type, true, line);
+       try{
+           symbolTable.put(key, entry);
+       } catch (Exception e){
+           String error = "ERROR line " + line + ": " + "the function \"" + key + "\" is already declared.\n";
+           throwError(error);
+       }
     }
 
-    public SymbolTableEntry find(String name) {
-        return symbolTable.get(name);
+    public SymbolTableEntry find(String key) {
+        return symbolTable.get(key);
+    }
+
+
+    private void throwError(String error){
+        //TODO: Handle here
+
     }
 }

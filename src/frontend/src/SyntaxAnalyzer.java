@@ -5,12 +5,16 @@ import frontend.src.model.ParseTree;
 
 public class SyntaxAnalyzer {
     private LexicAnalyzer lexicAnalyzer;
+    private String scope;
     TokenData currentToken;
 
     private StringBuilder errors = new StringBuilder();
+    private  SemanticAnalyzer semanticAnalyzer;
 
     public SyntaxAnalyzer(LexicAnalyzer lexicAnalyzer) {
         this.lexicAnalyzer = lexicAnalyzer;
+        this.semanticAnalyzer = new SemanticAnalyzer();
+        this.scope = null;
     }
 
     public ParseTree syntaxAnalysis() {
@@ -40,8 +44,13 @@ public class SyntaxAnalyzer {
 
     // Production for <FUNCION>
     private void funcion() {
+        String type = currentToken.getToken();
         tipoFuncion();
+        String key = currentToken.getToken();
+
         match("ID");
+
+        semanticAnalyzer.addFunction(type, key,currentToken.getLine());
         match("PARENTESIS_ABRIR");
         parametrosDeclaracionFuncion();
         match("PARENTESIS_CERRAR");
@@ -121,8 +130,12 @@ public class SyntaxAnalyzer {
 
     // Production for <DECLARACION_VARIABLE>
     private void declaracionVariable() {
+        String type = currentToken.getToken();
         tipo();
+        String key = currentToken.getToken();
         match("ID");
+
+        semanticAnalyzer.addEntry(type, key, scope, currentToken.getLine());
         declaracionVariablePrime();
     }
 
