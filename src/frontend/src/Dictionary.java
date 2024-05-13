@@ -42,7 +42,9 @@ public class Dictionary {
                 return entry.getToken();
             }
         }
-        System.out.println("Not found => |" + input + "|"); // TODO: Remove this is only dev
-        return null;
+
+        return "UNKNOWN";   //If we read a word that is not in the dictionary, we return "UNKNOWN". The lexer will handle this case.
+        //System.out.println("Not found => |" + input + "|"); // TODO: Remove this is only dev
+        //return null;
     }
 }
