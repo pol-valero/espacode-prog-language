@@ -22,7 +22,11 @@ public class ParseTree {
     }
 
     public void addChild(ParseTree child) {
-        children.add(child);
+
+        //If the match method finds an error and return null, we will not add the child to the tree. TODO: Check if this is the correct approach
+        if (child != null) {
+            children.add(child);
+        }
     }
 
     public String getToken() {
