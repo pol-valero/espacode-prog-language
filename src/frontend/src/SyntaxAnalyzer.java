@@ -15,8 +15,8 @@ public class SyntaxAnalyzer {
     private StringBuilder errors = new StringBuilder();
     private  SemanticAnalyzer semanticAnalyzer;
 
-    public SyntaxAnalyzer(LexicAnalyzer lexicAnalyzer) {
-        this.lexicAnalyzer = lexicAnalyzer;
+    public SyntaxAnalyzer(String codeFilePath) {
+        this.lexicAnalyzer = new LexicAnalyzer(codeFilePath);
         this.semanticAnalyzer = new SemanticAnalyzer();
         this.scope = null;
     }
