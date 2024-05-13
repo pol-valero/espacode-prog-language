@@ -13,6 +13,10 @@ public class LexicAnalyzer {
     private int currentWordLineNum;
 
     public LexicAnalyzer(String codeFilePath) {
+
+        Dictionary dictionary = new Dictionary();
+        dictionary.readDictionary();
+
         lineNumCounter = 1;
         try {
             scanner = new Scanner(new File(codeFilePath));
@@ -150,6 +154,13 @@ public class LexicAnalyzer {
 
         if (lexeme != null && !lexeme.equals("")) {
             token = Dictionary.findToken(lexeme);
+
+            if (token.equals("UNKNOWN")) {
+                //If an unknown token is found, we add an error, and we continue searching for the next known token by calling getNextToken() recursively.
+                ErrorHandler.addError("Error Linia " + currentWordLineNum + ":\n\t" + "Error de lexico: Token '" + lexeme + "' no conocido");
+                return getNextToken();
+            }
+
             return new TokenData(lexeme, token, currentWordLineNum);
         } else {
             //return null;
@@ -158,18 +169,25 @@ public class LexicAnalyzer {
 
     }
 
-    public TokenData peekNextToken() {
+    //TODO: Remove at the end. Probably no longer necessary
+    /*public TokenData peekNextToken() {
         String lexeme = peekNextLexeme();
         String token;
 
         if (lexeme != null && !lexeme.equals("")) {
             token = Dictionary.findToken(lexeme);
+
+            if (token.equals("UNKNOWN")) {
+                ErrorHandler.addError("Error Linia " + currentWordLineNum + ":\n\t" + "Error de lexico: Token '" + lexeme + "' no conocido");
+                return getNextToken();
+            }
+
             return new TokenData(lexeme, token, currentWordLineNum);
         } else {
             //return null;
             return new TokenData("#", "EOF", currentWordLineNum); //# is the EOF token
         }
-    }
+    }*/
 
     //TODO: Remove. Substituted by "line" field in TokenData
     public int getLineNumber() {

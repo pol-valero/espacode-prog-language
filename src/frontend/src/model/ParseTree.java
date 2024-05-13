@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParseTree {
-    private String type;
-    private String value;
+    private String token;
+    private String lexeme;
     private List<ParseTree> children;
 
     //TODO: Add "node" class (order of the children is important. ex.- to do operations)?
 
-    public ParseTree(String type) {
-        this.type = type;
+    public ParseTree(String token) {
+        this.token = token;
         this.children = new ArrayList<>();
     }
 
-    public ParseTree(String type, String value) {
-        this.type = type;
-        this.value = value;
+    public ParseTree(String token, String lexeme) {
+        this.token = token;
+        this.lexeme = lexeme;
         this.children = new ArrayList<>();
     }
 
@@ -25,12 +25,12 @@ public class ParseTree {
         children.add(child);
     }
 
-    public String getType() {
-        return type;
+    public String getToken() {
+        return token;
     }
 
-    public String getValue() {
-        return value;
+    public String getLexeme() {
+        return lexeme;
     }
 
     public List<ParseTree> getChildren() {
@@ -45,10 +45,10 @@ public class ParseTree {
     private String toStringHelper(int indent) {
         StringBuilder sb = new StringBuilder();
         sb.append("  ".repeat(Math.max(0, indent)));
-        sb.append(type);
-        if (value != null) {
+        sb.append(token);
+        if (lexeme != null) {
             sb.append(": ");
-            sb.append(value);
+            sb.append(lexeme);
         }
         sb.append("\n");
         for (ParseTree child : children) {
