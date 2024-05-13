@@ -157,7 +157,7 @@ public class LexicAnalyzer {
 
             if (token.equals("UNKNOWN")) {
                 //If an unknown token is found, we add an error, and we continue searching for the next known token by calling getNextToken() recursively.
-                System.out.println("Error: Unknown token found: " + lexeme + " at line " + currentWordLineNum);
+                ErrorHandler.addError("Error Linia " + currentWordLineNum + ":\n\t" + "Error de lexico: Token '" + lexeme + "' no conocido");
                 return getNextToken();
             }
 
@@ -178,7 +178,7 @@ public class LexicAnalyzer {
             token = Dictionary.findToken(lexeme);
 
             if (token.equals("UNKNOWN")) {
-                System.out.println("Error: Unknown token found: " + lexeme + " at line " + currentWordLineNum);
+                ErrorHandler.addError("Error Linia " + currentWordLineNum + ":\n\t" + "Error de lexico: Token '" + lexeme + "' no conocido");
                 return getNextToken();
             }
 

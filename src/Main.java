@@ -1,7 +1,4 @@
-import frontend.src.Dictionary;
-import frontend.src.LexicAnalyzer;
-import frontend.src.SyntaxAnalyzer;
-import frontend.src.TokenData;
+import frontend.src.*;
 import frontend.src.model.ParseTree;
 
 public class Main {
@@ -28,9 +25,9 @@ public class Main {
         SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(codeFilePath);
 
         ParseTree parseTree = syntaxAnalyzer.syntaxAnalysis();
-        if (syntaxAnalyzer.hasErrors()){
+        if (ErrorHandler.hasErrors()){
             System.out.println("\nErrores de sintaxis:\n");
-            System.out.println(syntaxAnalyzer.getErrors());
+            System.out.println(ErrorHandler.getErrors());
         } else {
             System.out.println("\nSintaxis correcta\n");
             System.out.println(parseTree);

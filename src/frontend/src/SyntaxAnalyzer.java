@@ -11,8 +11,6 @@ public class SyntaxAnalyzer {
     private LexicAnalyzer lexicAnalyzer;
     TokenData currentToken;
 
-    private StringBuilder errors = new StringBuilder();
-
     public SyntaxAnalyzer(String codeFilePath) {
         this.lexicAnalyzer = new LexicAnalyzer(codeFilePath);
     }
@@ -552,7 +550,7 @@ public class SyntaxAnalyzer {
 
     private void error(String expectedToken, List<String> followers) /*throws SyntaxException*/ {
 
-        errors.append("Error Line " + currentToken.getLine() + ":\n\t" + "Error de sintaxis1: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken() + "'\n");
+        ErrorHandler.addError("Error Linia " + currentToken.getLine() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken());
 
         skipTo(List.of(expectedToken), followers);
 
@@ -566,7 +564,7 @@ public class SyntaxAnalyzer {
 
     private void error(String expectedToken) /*throws SyntaxException*/ {
 
-        errors.append("Error Line " + currentToken.getLine() + ":\n\t" + "Error de sintaxis2: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken() + "'\n");
+        ErrorHandler.addError("Error Linia " + currentToken.getLine() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken());
 
         //throw new SyntaxException();
 
@@ -598,14 +596,6 @@ public class SyntaxAnalyzer {
             currentToken = lexicAnalyzer.getNextToken();
 
         }
-    }
-
-    public StringBuilder getErrors() {
-        return errors;
-    }
-
-    public boolean hasErrors() {
-        return errors.length() > 0;
     }
 
 
