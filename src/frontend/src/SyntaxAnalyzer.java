@@ -11,8 +11,6 @@ public class SyntaxAnalyzer {
     private LexicAnalyzer lexicAnalyzer;
     private String scope;
     TokenData currentToken;
-
-    private StringBuilder errors = new StringBuilder();
     private  SemanticAnalyzer semanticAnalyzer;
 
     public SyntaxAnalyzer(String codeFilePath) {

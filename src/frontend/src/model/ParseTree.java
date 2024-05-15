@@ -24,9 +24,11 @@ public class ParseTree {
     public void addChild(ParseTree child) {
 
         //If the match method finds an error and return null, we will not add the child to the tree. TODO: Check if this is the correct approach
-        if (child != null) {
+        //if (child != null) {
             children.add(child);
-        }
+        //}
+        //REMARK: instead of not adding the child if it is null, we will add it because when we pass a tree to semantic analyzer we want to check if a node is null
+        //and if it is, we will know that we don't have to do semantic analysis on that node because it has a syntax error.
     }
 
     public String getToken() {
@@ -56,7 +58,7 @@ public class ParseTree {
         }
         sb.append("\n");
         for (ParseTree child : children) {
-            if(child != null){
+            if(child != null){  //If a child is null, there has been a syntax error and the tree will be partially incomplete, so we will not print the child that contains the syntax error
                 sb.append(child.toStringHelper(indent + 1));
             }
         }
