@@ -6,37 +6,66 @@ public class TACGenerator {
     int tempCounter = 0;
     //TODO: Change the function below to generate TAC code
     public void generateTAC(ParseTree parseTree) {
-        switch (parseTree.getToken()) {
-            case "FUNCION":
-                System.out.println(parseTree.getLexeme() + ":");
-                for (ParseTree child : parseTree.getChildren()) {
-                    generateTAC(child);
-                }
-                break;
-            case "PRINCIPAL":
-                if (parseTree.getLexeme() == null){
-                    System.out.println("main:");
-                    for (ParseTree child : parseTree.getChildren()) {
-                        generateTAC(child);
-                    }
-                }
-                break;
+        generateCode(parseTree);
+    }
+    private void generateCode(ParseTree parseTree) {
+        generateFunctions(parseTree.getChildren().get(0));
+        generateMain(parseTree.getChildren().get(1));
+    }
+
+    private void generateFunctions(ParseTree parseTree) {
+        if (parseTree.getChildren().size() == 0) {
+            return;
+        }
+        generateFunction(parseTree.getChildren().get(0));
+        generateFunctions(parseTree.getChildren().get(1));
+    }
+    private void generateFunction(ParseTree parseTree) {
+        System.out.println(parseTree.getChildren().get(1).getLexeme() + ":");
+        generateBlock(parseTree.getChildren().get(5));
+    }
+    private void generateMain(ParseTree parseTree) {
+        System.out.println("main:");
+        generateBlock(parseTree.getChildren().get(3));
+    }
+    private void generateBlock(ParseTree parseTree) {
+        generateSubBlock(parseTree.getChildren().get(1));
+    }
+    private void generateSubBlock(ParseTree parseTree) {
+        if (parseTree.getChildren().size() == 0) {
+            return;
+        }
+        generateStatement(parseTree.getChildren().get(0));
+        generateSubBlock(parseTree.getChildren().get(1));
+    }
+    private void generateStatement(ParseTree parseTree) {
+        switch (parseTree.getChildren().get(0).getToken()) {
             case "DECLARACION_VARIABLE":
-                generateVariable(parseTree);
+                generateVariable(parseTree.getChildren().get(0));
+                break;
+            case "ID":
+                if (parseTree.getChildren().get(1).getChildren().get(0).getToken().equals("ASIGNACION_VARIABLE")) {
+                    generateNewAssignment(parseTree);
+                }else if (parseTree.getChildren().get(1).getChildren().get(0).getToken().equals("LLAMADA_FUNCION")) {
+                    //generateFunctionCall(parseTree.getChildren().get(0));
+                }
                 break;
             default:
                 break;
         }
-        for (ParseTree child : parseTree.getChildren()) {
-            generateTAC(child);
-        }
     }
     //!Below here it's the correct implementation of the TACGenerator
+    private void generateNewAssignment(ParseTree parseTree) {
+        String id = parseTree.getChildren().get(0).getLexeme();
+        String result = generateExpression(parseTree.getChildren().get(1).getChildren().get(0).getChildren().get(1).getChildren().get(0));
+        System.out.println(id + " = " + result);
+    }
+    //TODO: Fix the function below
     private void generateVariable(ParseTree parseTree) {
 
         String id = parseTree.getChildren().get(1).getLexeme();
-
-        if (parseTree.getChildren().get(2).getChildren() != null) {
+        //This
+        if (parseTree.getChildren().get(2).getChildren().get(0).getToken().equals("ASIGNACION_VARIABLE")) {
             String result = generateExpression(parseTree.getChildren().get(2).getChildren().get(0).getChildren().get(1).getChildren().get(0));
             System.out.println(id + " = " + result);
         }
