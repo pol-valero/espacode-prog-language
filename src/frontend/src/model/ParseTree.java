@@ -56,7 +56,9 @@ public class ParseTree {
         }
         sb.append("\n");
         for (ParseTree child : children) {
-            sb.append(child.toStringHelper(indent + 1));
+            if(child != null){
+                sb.append(child.toStringHelper(indent + 1));
+            }
         }
         return sb.toString();
     }

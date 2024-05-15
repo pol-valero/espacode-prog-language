@@ -53,7 +53,7 @@ public class LexicAnalyzer {
                     break;
                 }
 
-            }else if (next.equals(" ") || next.equals("\t")) {
+            }else if (next.equals(" ") || next.equals("\t")  || next.equals("\r")) {
                 if (wordRead) {
                     break;
                 }
@@ -150,9 +150,10 @@ public class LexicAnalyzer {
 
     public TokenData getNextToken() {
         String lexeme = getNextLexeme();
+
         String token;
 
-        if (lexeme != null && !lexeme.equals("")) {
+        if (lexeme != null && !lexeme.isEmpty()) {
             token = Dictionary.findToken(lexeme);
 
             if (token.equals("UNKNOWN")) {
