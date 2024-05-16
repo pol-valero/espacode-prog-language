@@ -10,8 +10,8 @@ L0:
     if i > var_numero goto L1
     resultado = actual + siguiente
     actual = siguiente
-    siguiente = resultado;
-    i = i + 1;
+    siguiente = resultado
+    i = i + 1
     goto L0
 L1:
     retorno resultado
