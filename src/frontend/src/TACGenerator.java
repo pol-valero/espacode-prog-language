@@ -115,7 +115,7 @@ public class TACGenerator {
             if (SecondTerm == null) {
                 return Term;
             }
-            System.out.println("t" + tempCounter + " = " + generateFactor(parseTree.getChildren().get(3)) + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondTerm);
+            System.out.println("t" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondTerm); //TODO: Check
             tempCounter++;
             return "t" + (tempCounter - 1);
         }
