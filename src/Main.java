@@ -25,6 +25,9 @@ public class Main {
         SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(codeFilePath);
 
         ParseTree parseTree = syntaxAnalyzer.syntaxAnalysis();
+
+        System.out.println(parseTree);
+
         if (ErrorHandler.hasErrors()){
             System.out.println("\nErrores de sintaxis:\n");
             System.out.println(ErrorHandler.getErrors());
