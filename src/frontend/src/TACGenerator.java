@@ -25,7 +25,7 @@ public class TACGenerator {
         generateBlock(parseTree.getChildren().get(5));
     }
     private void generateMain(ParseTree parseTree) {
-        System.out.println("main:");
+        System.out.println("\nprincipal:");
         generateBlock(parseTree.getChildren().get(3));
     }
     private void generateBlock(ParseTree parseTree) {
