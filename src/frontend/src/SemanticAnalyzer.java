@@ -9,8 +9,6 @@ public class SemanticAnalyzer {
     private SymbolTable symbolTable;
 
 
-    private StringBuilder errors = new StringBuilder();
-
     public SemanticAnalyzer() {
         this.symbolTable = new SymbolTable();
         this.symbolTable.addFunctionEntry(null, "main", 0);
@@ -63,7 +61,7 @@ public class SemanticAnalyzer {
         // IS a funcition?
         SymbolTableEntry function = symbolTable.find(key);
         if(function != null){
-            errors.append("In line " + line + ": can not assign a value to a function" + "\n");
+            ErrorHandler.addError("In line " + line + ": can not assign a value to a function" + "\n");
         }
 
         // IS a variable
@@ -76,28 +74,28 @@ public class SemanticAnalyzer {
             for(String token : valors){
                 if(type.equals("TIPO_ENTERO")){
                     if(!token.equals("VALOR_ENTERO")){
-                        errors.append("In line " + line + ": "+ key +"type do not match. \n");
+                        ErrorHandler.addError("In line " + line + ": "+ key +"type do not match. \n");
                         break;
                     }
                 }
                 if(type.equals("TIPO_DECIMAL")){
                     if(!token.equals("VALOR_DECIMAL")){
-                        errors.append("In line " + line + ": "+ key +"type do not match. \n");
+                        ErrorHandler.addError("In line " + line + ": "+ key +"type do not match. \n");
                         break;
                     }
                 }
                 if(type.equals("TIPO_CARACTER")){
                     if(!token.equals("TIPO_CARACTER")){
-                        errors.append("In line " + line + ": "+ key +"type do not match. \n");
+                        ErrorHandler.addError("In line " + line + ": "+ key +"type do not match. \n");
                         break;
                     }
                 }
             }
             } else {
-                errors.append("In line " + line + ": "+ key +"do not exist. \n");
+                ErrorHandler.addError("In line " + line + ": "+ key +"do not exist. \n");
             }
         } else {
-            errors.append("In line " + line + ": "+ key +"do not exist. \n");
+            ErrorHandler.addError("In line " + line + ": "+ key +"do not exist. \n");
         }
     }
 
