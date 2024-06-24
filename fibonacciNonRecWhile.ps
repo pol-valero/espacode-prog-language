@@ -1,0 +1,30 @@
+entero fibonacci(entero var_numero) inicio
+
+	entero actual = 0;
+	entero siguiente = 1;
+	entero resultado = 0;
+	entero i = 2;
+
+	si (var_numero menor_o_igual 1) inicio
+    		retorno var_numero;
+    fin
+
+    mientras (i menor_o_igual var_numero) inicio
+    	resultado = actual + siguiente;
+    	actual = siguiente;
+    	siguiente = resultado;
+    	i = i + 1;
+    fin
+
+	retorno resultado;
+
+fin
+
+principal() inicio
+
+	entero numero = 10;
+	entero resultado;
+
+	resultado = fibonacci(numero);
+
+fin

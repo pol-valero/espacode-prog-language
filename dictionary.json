@@ -1,27 +1,39 @@
 [
   {
+    "token": "VACIO",
+    "regex": "^vacio$"
+  },
+  {
+    "token": "PRINCIPAL",
+    "regex": "^principal$"
+  },
+  {
     "token": "TIPO_ENTERO",
-    "regex": "entero"
+    "regex": "^entero$"
+  },
+  {
+    "token": "TIPO_DECIMAL",
+    "regex": "^decimal$"
   },
   {
     "token": "TIPO_CARACTER",
-    "regex": "caracter"
-  },
-  {
-    "token": "NUM_ENTERO",
-    "regex": "\\b\\d+\\b"
+    "regex": "^caracter$"
   },
   {
     "token": "INICIO",
-    "regex": "inicio"
+    "regex": "^inicio$"
   },
   {
     "token": "FIN",
-    "regex": "fin"
+    "regex": "^fin$"
   },
   {
-    "token": "CARACTER_VALOR",
-    "regex": "'[a-zA-Z]'"
+    "token": "VALOR_ENTERO",
+    "regex": "^-?\\d+$"
+  },
+  {
+      "token": "VALOR_DECIMAL",
+      "regex": "^-?\\d+\\.\\d$"
   },
   {
     "token": "IGUAL_ASIGNACION",
@@ -36,8 +48,24 @@
     "regex": "\\)"
   },
   {
-    "token": "IGUAL_COMPARAR",
-    "regex": "igual"
+    "token": "IGUAL_COMPARACION",
+    "regex": "^igual$"
+  },
+  {
+    "token": "MAYOR_O_IGUAL",
+    "regex": "^mayor_o_igual$"
+  },
+  {
+    "token": "MENOR_O_IGUAL",
+    "regex": "^menor_o_igual$"
+  },
+  {
+    "token": "MAYOR",
+    "regex": "^mayor$"
+  },
+  {
+    "token": "MENOR",
+    "regex": "^menor$"
   },
   {
     "token": "MAS",
@@ -48,11 +76,43 @@
     "regex": "\\-"
   },
   {
-    "token": "ID",
-    "regex": "[a-zA-Z][a-zA-Z0-9]*"
+    "token": "MULTIPLICACION",
+    "regex": "\\*"
   },
   {
-    "token": "DELIMITADOR",
+    "token": "DIVISION",
+    "regex": "\\/"
+  },
+  {
+    "token": "SI",
+    "regex": "^si$"
+  },
+  {
+    "token": "SINO",
+    "regex": "^sino$"
+  },
+  {
+    "token": "MIENTRAS",
+    "regex": "^mientras$"
+  },
+  {
+    "token": "RETORNO",
+    "regex": "^retorno$"
+  },
+  {
+    "token": "COMA",
+    "regex": ","
+  },
+  {
+    "token": "PUNTO_Y_COMA",
     "regex": ";"
+  },
+  {
+    "token": "COMILLA",
+    "regex": "'"
+  },
+  {
+  "token": "ID",
+  "regex": "[a-zA-Z][a-zA-Z0-9]*"
   }
 ]
