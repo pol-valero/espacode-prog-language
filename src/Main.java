@@ -1,6 +1,8 @@
 import frontend.src.CompilerController;
 import frontend.src.Dictionary;
 
+//Comment
+
 public class Main {
 
     public static void main(String[] args) {
