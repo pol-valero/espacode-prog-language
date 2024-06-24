@@ -16,7 +16,7 @@ public class SyntaxAnalyzer {
     public SyntaxAnalyzer(String codeFilePath) {
         this.lexicAnalyzer = new LexicAnalyzer(codeFilePath);
         this.semanticAnalyzer = new SemanticAnalyzer();
-        this.scope = null;
+        this.scope = "main";
     }
 
     public ParseTree syntaxAnalysis() {
@@ -71,6 +71,11 @@ public class SyntaxAnalyzer {
         funcion.addChild(match("PARENTESIS_ABRIR"));
         funcion.addChild(parametrosDeclaracionFuncion());
         funcion.addChild(match("PARENTESIS_CERRAR"));
+        try{
+            this.scope = semanticAnalyzer.addFunction(funcion, this.currentToken.getLine());
+        } catch (Exception e){
+            // this is already handled. Utilitzar var aux en comptes de try catch?
+        }
         funcion.addChild(bloque(followers));
 
         return funcion;
@@ -201,6 +206,13 @@ public class SyntaxAnalyzer {
         declaracionVariable.addChild(match("ID"));
         declaracionVariable.addChild(declaracionVariablePrime(followers));
 
+        semanticAnalyzer.addEntry(declaracionVariable, this.scope, this.currentToken.getLine());
+
+
+        if(!declaracionVariable.getChildren().get(2).getChildren().get(0).getToken().equals("PUNTO_Y_COMA")){
+            semanticAnalyzer.checkAssignation(declaracionVariable, scope,currentToken.getLine());
+        }
+
         return declaracionVariable;
     }
 
@@ -243,6 +255,7 @@ public class SyntaxAnalyzer {
         asignacionVariable.addChild(match("IGUAL_ASIGNACION", followers));
         asignacionVariable.addChild(asignacionVariablePrime());
         asignacionVariable.addChild(match("PUNTO_Y_COMA"));
+
 
         return asignacionVariable;
     }
@@ -515,6 +528,11 @@ public class SyntaxAnalyzer {
         principal.addChild(match("PRINCIPAL", followers));
         principal.addChild(match("PARENTESIS_ABRIR"));
         principal.addChild(match("PARENTESIS_CERRAR"));
+        try{
+            this.scope = semanticAnalyzer.addPrincipal(this.currentToken.getLine());
+        } catch (Exception e){
+            // this is already handled. Utilitzar var aux en comptes de try catch?
+        }
         principal.addChild(bloque(followers));
 
         return principal;

@@ -8,29 +8,94 @@ import java.util.List;
 public class SemanticAnalyzer {
     private SymbolTable symbolTable;
 
-    private StringBuilder errors = new StringBuilder();
 
     public SemanticAnalyzer() {
         this.symbolTable = new SymbolTable();
+        this.symbolTable.addFunctionEntry(null, "main", 0);
     }
 
-    public void addFunction(String type, String key, int line){
-        symbolTable.addFunctionEntry(key, type, line);
+    public String addPrincipal(int line){
+        String type= "VACIO";
+        String key = "PRINCIPAL";
+
+        symbolTable.addFunctionEntry(type,key, line);
+        return key;
     }
 
-    public void addEntry(String type, String key, String scope, int line){
+    public String addFunction(ParseTree parseTree, int line ) {
+        String type = parseTree.getChildren().get(0).getChildren().get(0).getChildren().get(0).getToken();
+        String key = parseTree.getChildren().get(1).getLexeme();
+
+        symbolTable.addFunctionEntry(type, key, line);
+        return key;
+    }
+
+    public void addEntry(ParseTree parseTree, String scope, int line){
+        String type = parseTree.getChildren().get(0).getChildren().get(0).getToken();
+        String key = parseTree.getChildren().get(1).getLexeme();
+
        symbolTable.find(scope).addEntryToScope(type, key, line);
     }
 
-    public void checkAssignation(String id, String value){
-        SymbolTableEntry entry = symbolTable.find(id);
-        if (entry == null){
-            errors.append("ERROR: " + id +" is not declared\n");
-            return;
+
+    public static List<String> findTokensContainingValue(ParseTree node) {
+        List<String> tokensContainingValue = new ArrayList<>();
+        findTokensContainingValueHelper(node, "VALOR", tokensContainingValue);
+        return tokensContainingValue;
+    }
+
+    private static void findTokensContainingValueHelper(ParseTree node, String value, List<String> result) {
+        if (node.getToken() != null && node.getToken().contains(value)) {
+            result.add(node.getToken());
+        }
+        for (ParseTree child : node.getChildren()) {
+            findTokensContainingValueHelper(child, value, result);
+        }
+    }
+
+
+    public void checkAssignation(ParseTree parseTree, String scope, int line){
+        String key = parseTree.getChildren().get(1).getLexeme();
+
+
+        // IS a funcition?
+        SymbolTableEntry function = symbolTable.find(key);
+        if(function != null){
+            ErrorHandler.addError("In line " + line + ": can not assign a value to a function" + "\n");
         }
 
-        if (!matchType(entry.getType(), value)){
-               errors.append("ERROR: the type and the value of " + id + " is not matching\n");
+        // IS a variable
+        SymbolTableEntry functionScope = symbolTable.find(scope);
+        if(functionScope != null){
+            SymbolTableEntry entry = functionScope.getSymbolTable().find(key);
+            if(entry != null){
+            List<String> valors = findTokensContainingValue(parseTree);
+            String type = entry.getType();
+            for(String token : valors){
+                if(type.equals("TIPO_ENTERO")){
+                    if(!token.equals("VALOR_ENTERO")){
+                        ErrorHandler.addError("In line " + line + ": "+ key +"type do not match. \n");
+                        break;
+                    }
+                }
+                if(type.equals("TIPO_DECIMAL")){
+                    if(!token.equals("VALOR_DECIMAL")){
+                        ErrorHandler.addError("In line " + line + ": "+ key +"type do not match. \n");
+                        break;
+                    }
+                }
+                if(type.equals("TIPO_CARACTER")){
+                    if(!token.equals("TIPO_CARACTER")){
+                        ErrorHandler.addError("In line " + line + ": "+ key +"type do not match. \n");
+                        break;
+                    }
+                }
+            }
+            } else {
+                ErrorHandler.addError("In line " + line + ": "+ key +"do not exist. \n");
+            }
+        } else {
+            ErrorHandler.addError("In line " + line + ": "+ key +"do not exist. \n");
         }
     }
 

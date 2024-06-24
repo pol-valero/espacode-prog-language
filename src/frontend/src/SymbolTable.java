@@ -4,30 +4,33 @@ import java.util.HashMap;
 
 class SymbolTable {
     private HashMap<String, SymbolTableEntry> symbolTable;
+    private StringBuilder errors = new StringBuilder();
+
 
     public SymbolTable() {
         symbolTable = new HashMap<String, SymbolTableEntry>();
     }
 
     public void addVariableEntry(String key, String type, int line) {
-        SymbolTableEntry entry = new SymbolTableEntry(key, type, line);
-        try{
-            symbolTable.put(key, entry);
-        } catch (Exception e){
+        if (symbolTable.containsKey(key)) {
             String error = "ERROR line " + line + ": " + "the id \"" + key + "\" is already declared.\n";
             throwError(error);
+        } else {
+            SymbolTableEntry entry = new SymbolTableEntry(key, type, line);
+            symbolTable.put(key, entry);
         }
     }
 
     public void addFunctionEntry(String type, String key, int line) {
-        SymbolTableEntry entry = new SymbolTableEntry(key, type, true, line);
-       try{
-           symbolTable.put(key, entry);
-       } catch (Exception e){
-           String error = "ERROR line " + line + ": " + "the function \"" + key + "\" is already declared.\n";
-           throwError(error);
-       }
+        if (symbolTable.containsKey(key)) {
+            String error = "ERROR line " + line + ": " + "the function \"" + key + "\" is already declared.\n";
+            throwError(error);
+        } else {
+            SymbolTableEntry entry = new SymbolTableEntry(key, type, true, line);
+            symbolTable.put(key, entry);
+        }
     }
+
 
     public SymbolTableEntry find(String key) {
         return symbolTable.get(key);
@@ -35,7 +38,6 @@ class SymbolTable {
 
 
     private void throwError(String error){
-        //TODO: Handle here
-
+        ErrorHandler.addError(error);
     }
 }
