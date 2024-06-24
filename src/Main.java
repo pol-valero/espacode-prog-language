@@ -18,7 +18,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String codeFilePath = "fibonacciRec.ps";
+        String codeFilePath = "example3.ps";
+        //String codeFilePath = "FibonacciNonRecWhile.ps";
+
 
         //testLexer(codeFilePath);
 
@@ -31,9 +33,11 @@ public class Main {
         if (ErrorHandler.hasErrors()){
             System.out.println(ErrorHandler.getErrors());
         } else {
-            //Proceed with code generation
+            TACGenerator tacGenerator = new TACGenerator();
+            tacGenerator.generateTAC(parseTree);
         }
 
     }
 
 }
+
