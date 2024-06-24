@@ -25,7 +25,7 @@ public class TACGenerator {
         generateBlock(parseTree.getChildren().get(5));
     }
     private void generateMain(ParseTree parseTree) {
-        System.out.println("main:");
+        System.out.println("\nprincipal:");
         generateBlock(parseTree.getChildren().get(3));
     }
     private void generateBlock(ParseTree parseTree) {
@@ -115,7 +115,7 @@ public class TACGenerator {
             if (SecondTerm == null) {
                 return Term;
             }
-            System.out.println("t" + tempCounter + " = " + generateFactor(parseTree.getChildren().get(3)) + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondTerm);
+            System.out.println("t" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondTerm); //TODO: Check
             tempCounter++;
             return "t" + (tempCounter - 1);
         }
