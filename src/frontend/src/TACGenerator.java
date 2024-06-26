@@ -71,7 +71,7 @@ public class TACGenerator {
         }
     }
     public String generateExpression(ParseTree parseTree) {
-        String Expression = generateTerm(parseTree.getChildren().get(0));
+        String Expression = generateExpressionResta(parseTree.getChildren().get(0));
         String SecondExpression = generateExpression_1(parseTree.getChildren().get(1));
         if (SecondExpression == null) {
             return Expression;
@@ -85,8 +85,33 @@ public class TACGenerator {
         if (parseTree.getChildren().size() == 0) {
             return null;
         }else{
-            String Expression = generateTerm(parseTree.getChildren().get(1));
+            String Expression = generateExpressionResta(parseTree.getChildren().get(1));
             String SecondExpression = generateExpression_1(parseTree.getChildren().get(2));
+            if (SecondExpression == null) {
+                return Expression;
+            }
+            System.out.println("t" + tempCounter++ + " = " + Expression + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondExpression);
+            return "t" + (tempCounter - 1);
+        }
+    }
+
+    public String generateExpressionResta(ParseTree parseTree) {
+        String Expression = generateTerm(parseTree.getChildren().get(0));
+        String SecondExpression = generateExpressionResta_1(parseTree.getChildren().get(1));
+        if (SecondExpression == null) {
+            return Expression;
+        }
+        System.out.println("t" + tempCounter++ + " = " + Expression + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondExpression);
+
+        return "t" + (tempCounter - 1);
+    }
+
+    public String generateExpressionResta_1(ParseTree parseTree) {
+        if (parseTree.getChildren().size() == 0) {
+            return null;
+        }else{
+            String Expression = generateTerm(parseTree.getChildren().get(1));
+            String SecondExpression = generateExpressionResta_1(parseTree.getChildren().get(2));
             if (SecondExpression == null) {
                 return Expression;
             }
@@ -102,16 +127,43 @@ public class TACGenerator {
         if (SecondTerm == null) {
             return Term;
         }
-        System.out.println("t" + tempCounter++ + " = " + parseTree.getChildren().get(0).getChildren().get(0).getLexeme() + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondTerm);
+        System.out.println("t" + tempCounter++ + " = " + Term + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondTerm);
 
         return "t" + (tempCounter - 1);
     }
+
     public String generateTerm_1(ParseTree parseTree) {
         if (parseTree.getChildren().size() == 0) {
             return null;
         } else {
-            String Term = generateFactor(parseTree.getChildren().get(1));
+            String Term = generateTermDiv(parseTree.getChildren().get(1));
             String SecondTerm = generateTerm_1(parseTree.getChildren().get(2));
+            if (SecondTerm == null) {
+                return Term;
+            }
+            System.out.println("t" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondTerm); //TODO: Check
+            tempCounter++;
+            return "t" + (tempCounter - 1);
+        }
+    }
+
+    public String generateTermDiv(ParseTree parseTree) {
+        String Term = generateFactor(parseTree.getChildren().get(0));
+        String SecondTerm = generateTermDiv_1(parseTree.getChildren().get(1));
+
+        if (SecondTerm == null) {
+            return Term;
+        }
+        System.out.println("t" + tempCounter++ + " = " + Term + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondTerm);
+
+        return "t" + (tempCounter - 1);
+    }
+    public String generateTermDiv_1(ParseTree parseTree) {
+        if (parseTree.getChildren().size() == 0) {
+            return null;
+        } else {
+            String Term = generateFactor(parseTree.getChildren().get(1));
+            String SecondTerm = generateTermDiv_1(parseTree.getChildren().get(2));
             if (SecondTerm == null) {
                 return Term;
             }
