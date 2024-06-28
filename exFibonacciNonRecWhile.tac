@@ -19,5 +19,6 @@ L1:
 
 principal:
     numero = 10
+    resultado = 0
     writeParam 0 numero
     resultado = call fibonacci
