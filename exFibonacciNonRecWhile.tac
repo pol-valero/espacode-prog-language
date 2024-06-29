@@ -16,7 +16,6 @@ L0:
 L1:
     retorno resultado
 
-
 principal:
     numero = 10
     writeParam 0 numero
