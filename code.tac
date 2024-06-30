@@ -1,24 +1,18 @@
 fibonacci:
-    readParam 0 var_numero
-    actual = 0
-    siguiente = 1
-    resultado = 0
-    i = 2
-    if var_numero > 1 goto L0
-    retorno var_numero
+    readParam 0 t0
+    if t0 >= 2 goto L0
+    return t0
 L0:
-    if i > var_numero goto L1
-    resultado = actual + siguiente
-    actual = siguiente
-    siguiente = resultado
-    i = i + 1
-    goto L0
-L1:
-    retorno resultado
+    t1 = t0 - 1
+    t2 = t0 - 2
+    writeParam 0 t1
+    t3 = call fibonacci
+    writeParam 0 t2
+    t4 = call fibonacci
+    t5 = t3 + t4
+    return t5
 
-
-principal:
-    numero = 10
-    resultado = 0
-    writeParam 0 numero
-    resultado = call fibonacci
+main:
+    writeParam 0 13
+    t6 = call fibonacci
+    call fibonacci

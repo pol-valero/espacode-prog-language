@@ -18,7 +18,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String codeFilePath = "example3.ps";
+        String codeFilePath = "fibonacciRecSimp.ps";
         //String codeFilePath = "FibonacciNonRecWhile.ps";
         String TACfilepath = "code.tac";
         String MIPSfilepath = "code.asm";

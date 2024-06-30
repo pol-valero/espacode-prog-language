@@ -19,14 +19,62 @@ public class MIPSGenerator {
 
         MIPScode = generateMIPS(TACsentences);
 
+        System.out.println("\n" + "MIPS CODE\n\n" + MIPScode);
+
 
         //createMIPSfile(MIPScode, MIPSfilepath); //Create the code.asm file
     }
 
     private String generateMIPS(LinkedList<String> TACsentences) {
-        String MIPScode = "";
+        StringBuilder MIPScode = new StringBuilder();
 
-        return MIPScode;
+        MIPScode.append(".text\nj $main\n\n");
+
+        for (String sentence : TACsentences) {
+            String[] words = sentence.trim().split("\\s+"); //We remove tabs and spaces
+
+            if (words.length == 1) {
+                if (words[0].contains(":")) {
+                    addLabel(MIPScode, words[0]);
+                } else {
+                    MIPScode.append("Error: MIPS word not recognized\n");
+                    //TODO: Add all errors like this to ErrorHandler?
+                }
+            } else if (words.length == 2) {
+                if (words[0].equals("return")) {
+                    addReturn(MIPScode, words[1]);
+                } else if (words[0].equals("goto")) {
+                    addGoto(MIPScode, words[1]);
+                } else if (words[0].equals("call")) {
+                    //addStandaloneFunctionCall(MIPScode, words[1]); //Function call that is not assigned, and which return value is not used
+                } else {
+                    MIPScode.append("Error: MIPS word not recognized\n");
+                }
+            } else if (words.length == 3) {
+
+            }
+
+
+        }
+
+        return MIPScode.toString();
+    }
+
+    private void addLabel(StringBuilder MIPScode, String label) {
+        MIPScode.append("$" + label + "\n");
+    }
+
+    private void addReturn(StringBuilder MIPScode, String value) {
+        if (value.contains("t")) {
+            MIPScode.append("\tmove $v0, $" + value + "\n");
+        } else {
+            MIPScode.append("\tli $v0, " + value + "\n");
+        }
+        MIPScode.append("\tjr $ra\n");
+    }
+
+    private void addGoto(StringBuilder MIPScode, String label) {
+        MIPScode.append("\tj $" + label + "\n");
     }
 
     private boolean TACfileIsValid(String TACfilepath) {
