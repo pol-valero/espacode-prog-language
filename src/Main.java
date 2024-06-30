@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) {
 
         String codeFilePath = "fibonacciRecSimp.ps";
-        //String codeFilePath = "FibonacciNonRecWhile.ps";
+
         String TACfilepath = "code.tac";
         String MIPSfilepath = "code.asm";
 
@@ -29,13 +29,13 @@ public class Main {
 
         ParseTree parseTree = syntaxAnalyzer.syntaxAnalysis();
 
-        System.out.println(parseTree);
+        //System.out.println(parseTree);
 
         if (ErrorHandler.hasErrors()){
             System.out.println(ErrorHandler.getErrors());
         } else {
             TACGenerator tacGenerator = new TACGenerator();
-            tacGenerator.generateTAC(parseTree/*, TACfilepath*/); //TODO: Put TACfilepath as a parameter
+            tacGenerator.generateTAC(parseTree, TACfilepath);
 
             MIPSGenerator mipsGenerator = new MIPSGenerator();
             mipsGenerator.TACtoMIPS(MIPSfilepath, TACfilepath);
