@@ -87,11 +87,11 @@ public class LexicAnalyzer {
 
                 //Check if token is a negative number. If it is, we avoid splitting the token by the "-" sign.
                 if (token.contains("-") && token.length() > 1 && Character.isDigit(token.charAt(1)) ) {
-                    String[] splitChars = token.split("(?=[{}();+*/'])|(?<=[{}();+*/'])");    //We avoid splitting by "-"
+                    String[] splitChars = token.split("(?=[{}();+*/',])|(?<=[{}();+*/',])");    //We avoid splitting by "-"
                     Collections.addAll(queue, splitChars);
                 } else {
                     //To adapt into our system we use a queue to get all tokens split.
-                    String[] splitChars = token.split("(?=[{}();+\\-*/'])|(?<=[{}();+\\-*/'])");
+                    String[] splitChars = token.split("(?=[{}();+\\-*/',])|(?<=[{}();+\\-*/',])");
                     Collections.addAll(queue, splitChars);
                 }
                 if (!queue.isEmpty()) {
@@ -122,11 +122,11 @@ public class LexicAnalyzer {
 
                 //Check if token is a negative number. If it is, we avoid splitting the token by the "-" sign.
                 if (token.contains("-") && token.length() > 1 && Character.isDigit(token.charAt(1)) ) {
-                    String[] splitChars = token.split("(?=[{}();+*/'])|(?<=[{}();+*/'])");    //We avoid splitting by "-"
+                    String[] splitChars = token.split("(?=[{}();+*/',])|(?<=[{}();+*/',])");    //We avoid splitting by "-"
                     Collections.addAll(queue, splitChars);
                 } else {
                     //To adapt into our system we use a queue to get all tokens split.
-                    String[] splitChars = token.split("(?=[{}();+\\-*/'])|(?<=[{}();+\\-*/'])");
+                    String[] splitChars = token.split("(?=[{}();+\\-*/',])|(?<=[{}();+\\-*/',])");
                     Collections.addAll(queue, splitChars);
                 }
                 if (!queue.isEmpty()) {
