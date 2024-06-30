@@ -77,8 +77,9 @@ public class TACGenerator {
             return;
         }
         tempVariables.put(parseTree.getChildren().get(1).getLexeme(), tempCounter);
-        System.out.println("\treadParam " + "t" + tempCounter++);
+        System.out.println("\treadParam " + paramCounter++ + " t" + tempCounter++);
         generateFunctionParametersPrime(parseTree.getChildren().get(2));
+        paramCounter = 0;
     }
     // <PARAMETROS_DECLARACION_FUNCION’> ::= COMA <TIPO> ID <PARAMETROS_DECLARACION_FUNCION’> | e
     private void generateFunctionParametersPrime(ParseTree parseTree) {
@@ -229,7 +230,7 @@ public class TACGenerator {
     }
     // <TERMINO> ::= < TERMINO_DIV > <TERMINO’>
     public String generateTerm(ParseTree parseTree) {
-        String Term = generateFactor(parseTree.getChildren().get(0));
+        String Term = generateTermDiv(parseTree.getChildren().get(0));
         String SecondTerm = generateTerm_1(parseTree.getChildren().get(1));
 
         if (SecondTerm == null) {
