@@ -89,7 +89,7 @@ public class TACGenerator {
         String type = generateType(parseTree.getChildren().get(1));
         String id = parseTree.getChildren().get(2).getLexeme();
         tempVariables.put(id, tempCounter);
-        System.out.println("\treadParam " + "t" + tempCounter++);
+        System.out.println("\treadParam " + paramCounter++ + " t" + tempCounter++);
         generateFunctionParametersPrime(parseTree.getChildren().get(3));
     }
 
