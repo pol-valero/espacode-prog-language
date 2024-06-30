@@ -1,31 +1,32 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class MIPSGenerator {
 
 
-    public String TACtoMIPS(String TACfilepath) {
+    public void TACtoMIPS(String MIPSfilepath, String TACfilepath) {
 
         LinkedList<String> TACsentences;
+        String MIPScode = "";
 
         if (!TACfileIsValid(TACfilepath)) {
-            return null;
+            return;
         }
 
         TACsentences = loadTACsentences(TACfilepath);
 
-        //print all TAC sentences //TODO: Remove this
-        for (String sentence : Objects.requireNonNull(TACsentences)) {
-            System.out.println("Sentence: " + sentence);
-        }
+        MIPScode = generateMIPS(TACsentences);
 
 
+        //createMIPSfile(MIPScode, MIPSfilepath); //Create the code.asm file
+    }
 
-        String MIPSfile = "";
-        return MIPSfile;
+    private String generateMIPS(LinkedList<String> TACsentences) {
+        String MIPScode = "";
+
+        return MIPScode;
     }
 
     private boolean TACfileIsValid(String TACfilepath) {
