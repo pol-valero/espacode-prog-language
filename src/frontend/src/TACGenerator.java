@@ -8,11 +8,22 @@ import java.util.Map;
 import java.util.Queue;
 
 public class TACGenerator {
-    int tempCounter = 0;
-    Queue<String> labels = new LinkedList<>();
-    int labelCounter = 0;
-    Queue<Integer> params = new LinkedList<>();
+    private Map<String, Integer> tempVariables = new HashMap<>();
+    private int tempCounter = 0;
+    private Queue<String> labels = new LinkedList<>();
+    private int labelCounter = 0;
+    private Queue<Integer> params = new LinkedList<>();
     private static final Map<String, String> operatorMap = new HashMap<>();
+    // Este esta todo negado
+    static {
+        operatorMap.put("MAYOR_O_IGUAL", "<");
+        operatorMap.put("MENOR_O_IGUAL", ">");
+        operatorMap.put("MAYOR", "<=");
+        operatorMap.put("MENOR", ">=");
+        operatorMap.put("IGUAL_COMPARACION", "!=");
+        operatorMap.put("DISTINTO_DE", "==");
+    }
+    /*
     static {
         operatorMap.put("MAYOR_O_IGUAL", ">=");
         operatorMap.put("MENOR_O_IGUAL", "<=");
@@ -20,7 +31,7 @@ public class TACGenerator {
         operatorMap.put("MENOR", "<");
         operatorMap.put("IGUAL_COMPARACION", "==");
         operatorMap.put("DISTINTO_DE", "!=");
-    }
+    }*/
     //TODO: Change the function below to generate TAC code
     public void generateTAC(ParseTree parseTree) {
         generateCode(parseTree);
@@ -41,6 +52,7 @@ public class TACGenerator {
 
     // <FUNCION> ::= <TIPO_FUNCION> ID PARENTESIS_ABRIR  <PARAMETROS_DECLARACION_FUNCION> PARENTESIS_CERRAR <BLOQUE>
     private void generateFunction(ParseTree parseTree) {
+        tempVariables.clear();
         String functionType = generateFunctionType(parseTree.getChildren().get(0));
         String functionName = parseTree.getChildren().get(1).getLexeme();
         System.out.println("\n" + functionName + ":");
@@ -64,7 +76,8 @@ public class TACGenerator {
         if (parseTree.getChildren().size() == 0) {
             return;
         }
-        System.out.println("readParam " + "t" + tempCounter++);
+        tempVariables.put(parseTree.getChildren().get(1).getLexeme(), tempCounter);
+        System.out.println("\treadParam " + "t" + tempCounter++);
         generateFunctionParametersPrime(parseTree.getChildren().get(2));
     }
 
@@ -75,7 +88,8 @@ public class TACGenerator {
         }
         String type = generateType(parseTree.getChildren().get(1));
         String id = parseTree.getChildren().get(2).getLexeme();
-        System.out.println(type + " " + id);
+        tempVariables.put(id, tempCounter);
+        System.out.println("\treadParam " + "t" + tempCounter++);
         generateFunctionParametersPrime(parseTree.getChildren().get(3));
     }
 
@@ -117,7 +131,8 @@ public class TACGenerator {
     private void generateVariable(ParseTree parseTree) {
         String id = parseTree.getChildren().get(1).getLexeme();
         String result = generateVariablePrime(parseTree.getChildren().get(2));
-        System.out.println(id + result);
+        tempVariables.put(id, tempCounter);
+        System.out.println("\tt" + tempCounter++ + result);
     }
     // <DECLARACION_VARIABLE’> ::=  <ASIGNACION_VARIABLE> | PUNTO_Y_COMA
     private String generateVariablePrime(ParseTree parseTree) {
@@ -131,10 +146,11 @@ public class TACGenerator {
     private void generateStatementIdSubBlock(ParseTree parseTree, String id) {
         if (parseTree.getChildren().get(0).getToken().equals("LLAMADA_FUNCION")) {
             generateFunctionCall(parseTree.getChildren().get(0));
-            System.out.println("call " + id);
+            System.out.println("\tcall " + id);
         } else {
             String result = generateNewAssignment(parseTree.getChildren().get(0));
-            System.out.println(id + result);
+            id = tempVariables.containsKey(id) ? "t" + tempVariables.get(id) : id;
+            System.out.println("\t" + id + result);
         }
     }
     // <ASIGNACION_VARIABLE> ::= IGUAL_ASIGNACION <ASIGNACION_VARIABLE’> PUNTO_Y_COMA
@@ -169,9 +185,9 @@ public class TACGenerator {
         if (SecondExpression == null) {
             return Expression;
         }
-        System.out.println("t" + tempCounter++ + " = " + Expression + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondExpression);
+        System.out.println("\tt" + tempCounter + " = " + Expression + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondExpression);
 
-        return "t" + (tempCounter - 1);
+        return "t" + tempCounter++;
     }
     // <EXPRESION’> ::= MAS < EXPRESION_RESTA> <EXPRESION’> | e
     public String generateExpression_1(ParseTree parseTree) {
@@ -183,8 +199,8 @@ public class TACGenerator {
             if (SecondExpression == null) {
                 return Expression;
             }
-            System.out.println("t" + tempCounter++ + " = " + Expression + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondExpression);
-            return "t" + (tempCounter - 1);
+            System.out.println("\tt" + tempCounter + " = " + Expression + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondExpression);
+            return "t" + tempCounter++;
         }
     }
     // <EXPRESION_RESTA> ::= <TERMINO> <EXPRESION_RESTA’>
@@ -194,9 +210,9 @@ public class TACGenerator {
         if (SecondExpression == null) {
             return Expression;
         }
-        System.out.println("t" + tempCounter++ + " = " + Expression + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondExpression);
+        System.out.println("\tt" + tempCounter + " = " + Expression + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondExpression);
 
-        return "t" + (tempCounter - 1);
+        return "t" + tempCounter++;
     }
     // <EXPRESION_RESTA’> ::= MENOS <TERMINO> <EXPRESION_RESTA’> | e
     public String generateExpressionResta_1(ParseTree parseTree) {
@@ -208,8 +224,8 @@ public class TACGenerator {
             if (SecondExpression == null) {
                 return Expression;
             }
-            System.out.println("t" + tempCounter++ + " = " + Expression + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondExpression);
-            return "t" + (tempCounter - 1);
+            System.out.println("\tt" + tempCounter + " = " + Expression + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondExpression);
+            return "t" + tempCounter++;
         }
     }
     // <TERMINO> ::= < TERMINO_DIV > <TERMINO’>
@@ -220,9 +236,9 @@ public class TACGenerator {
         if (SecondTerm == null) {
             return Term;
         }
-        System.out.println("t" + tempCounter++ + " = " + Term + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondTerm);
+        System.out.println("\tt" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondTerm);
 
-        return "t" + (tempCounter - 1);
+        return "t" + tempCounter++;
     }
     // <TERMINO’> ::= MULTIPLICACION < TERMINO_DIV > <TERMINO’> | e
     public String generateTerm_1(ParseTree parseTree) {
@@ -234,9 +250,9 @@ public class TACGenerator {
             if (SecondTerm == null) {
                 return Term;
             }
-            System.out.println("t" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondTerm); //TODO: Check
-            tempCounter++;
-            return "t" + (tempCounter - 1);
+            System.out.println("\tt" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondTerm); //TODO: Check
+
+            return "t" + tempCounter++;
         }
     }
     // <TERMINO_DIV> ::= <FACTOR> <TERMINO _DIV’>
@@ -247,9 +263,9 @@ public class TACGenerator {
         if (SecondTerm == null) {
             return Term;
         }
-        System.out.println("t" + tempCounter++ + " = " + Term + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondTerm);
+        System.out.println("\tt" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(1).getChildren().get(0).getLexeme() + " " + SecondTerm);
 
-        return "t" + (tempCounter - 1);
+        return "t" + tempCounter++;
     }
     // <TERMINO_DIV’> ::= DIVISION <FACTOR> <TERMINO_DIV’> | e
     public String generateTermDiv_1(ParseTree parseTree) {
@@ -261,9 +277,9 @@ public class TACGenerator {
             if (SecondTerm == null) {
                 return Term;
             }
-            System.out.println("t" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondTerm); //TODO: Check
-            tempCounter++;
-            return "t" + (tempCounter - 1);
+            System.out.println("\tt" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondTerm); //TODO: Check
+
+            return "t" + tempCounter++;
         }
     }
     // <FACTOR> ::= ID <LLAMADA_FUNCION'> | VALOR_ENTERO | VALOR_DECIMAL | PARENTESIS_ABRIR <EXPRESION> PARENTESIS_CERRAR
@@ -275,7 +291,9 @@ public class TACGenerator {
                 if (generateFunctionCall(parseTree.getChildren().get(1))) {
                     return "call " + parseTree.getChildren().get(0).getLexeme();
                 }else{
-                    return parseTree.getChildren().get(0).getLexeme();
+                    String ID = parseTree.getChildren().get(0).getLexeme();
+                    ID = tempVariables.containsKey(ID) ? "t" + tempVariables.get(ID) : ID;
+                    return ID;
                 }
             } else if (parseTree.getChildren().get(0).getToken().equals("VALOR_ENTERO")) {
                 return parseTree.getChildren().get(0).getLexeme();
@@ -310,32 +328,32 @@ public class TACGenerator {
             return;
         }
         String Expression = generateExpression(parseTree.getChildren().get(0));
-        System.out.println("writeParam " + params.size() + " " + Expression);
-        params.add(params.size());
+        System.out.println("\twriteParam " + params.size() + " " + Expression);
         generateCallFunctionParameters(parseTree.getChildren().get(1));
     }
     // <PARAMETROS_LLAMADA_FUNCION’> ::= COMA <EXPRESION> <PARAMETROS_LLAMADA_FUNCION’> | e
     // <RETORNO_EXPRESION> ::= RETORNO <EXPRESION> PUNTO_Y_COMA
     private void generateReturnStatement(ParseTree parseTree) {
         String Expression = generateExpression(parseTree.getChildren().get(1));
-        System.out.println("return " + Expression);
+        System.out.println("\treturn " + Expression);
     }
     // <MIENTRAS_EXPRESION> ::= MIENTRAS PARENTESIS_ABRIR <COMPARACION> PARENTESIS_CERRAR <BLOQUE>
     private void generateWhileStatement(ParseTree parseTree) {
         System.out.println("L" + labelCounter + ":");
         labels.add("L" + labelCounter++);
         String Comparation = generateComparation(parseTree.getChildren().get(2));
-        System.out.println("if " + Comparation + " goto " + "L" + labelCounter);
+        System.out.println("\tif " + Comparation + " goto " + "L" + labelCounter);
         labels.add("L" + labelCounter++);
         generateBlock(parseTree.getChildren().get(4));
         String first = labels.poll();
         String second = labels.poll();
-        System.out.println("goto " + first);
+        System.out.println("\tgoto " + first);
         System.out.println(second + ":");
     }
     // <COMPARACION> ::= ID <COMPARACION’>
     private String generateComparation(ParseTree parseTree) {
         String ID = parseTree.getChildren().get(0).getLexeme();
+        ID = tempVariables.containsKey(ID) ? "t" + tempVariables.get(ID) : ID;
         String SecondExpression = generateComparationPrime(parseTree.getChildren().get(1));
         return ID + " " + SecondExpression;
     }
@@ -346,14 +364,22 @@ public class TACGenerator {
     // <SI_EXPRESION> ::= SI PARENTESIS_ABRIR <COMPARACION> PARENTESIS_CERRAR <BLOQUE> <SINO_EXPRESION>
     private void generateIfStatement(ParseTree parseTree) {
         String Comparation = generateComparation(parseTree.getChildren().get(2));
-        System.out.println("if " + Comparation + " goto " + "L" + labelCounter);
+        System.out.println("\tif " + Comparation + " goto " + "L" + labelCounter);
         labels.add("L" + labelCounter++);
         generateBlock(parseTree.getChildren().get(4));
         System.out.println(labels.poll() + ":");
+        generateElseStatement(parseTree.getChildren().get(5));
     }
     // <SINO_EXPRESION> ::= SINO <BLOQUE> | e
+    private void generateElseStatement(ParseTree parseTree) {
+        if (parseTree.getChildren().size() == 0) {
+            return;
+        }
+        generateBlock(parseTree.getChildren().get(1));
+    }
     // <PRINCIPAL> ::= PRINCIPAL PARENTESIS_ABRIR PARENTESIS_CERRAR <BLOQUE>
     private void generateMain(ParseTree parseTree) {
+        tempVariables.clear();
         System.out.println("\nprincipal:");
         generateBlock(parseTree.getChildren().get(3));
     }
