@@ -442,9 +442,7 @@ public class SyntaxAnalyzer {
         ParseTree llamadaFuncionPrime = new ParseTree("LLAMADA_FUNCION'");
 
         if (currentToken.equals("PARENTESIS_ABRIR")) {
-            llamadaFuncionPrime.addChild(match("PARENTESIS_ABRIR"));
-            llamadaFuncionPrime.addChild(parametrosLlamadaFuncion());
-            llamadaFuncionPrime.addChild(match("PARENTESIS_CERRAR"));
+            llamadaFuncionPrime.addChild(llamadaFuncion());
         }
 
         return llamadaFuncionPrime;

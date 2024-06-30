@@ -12,7 +12,7 @@ public class TACGenerator {
     private int tempCounter = 0;
     private Queue<String> labels = new LinkedList<>();
     private int labelCounter = 0;
-    private Queue<Integer> params = new LinkedList<>();
+    private int paramCounter = 0;
     private static final Map<String, String> operatorMap = new HashMap<>();
     // Este esta todo negado
     static {
@@ -80,7 +80,6 @@ public class TACGenerator {
         System.out.println("\treadParam " + "t" + tempCounter++);
         generateFunctionParametersPrime(parseTree.getChildren().get(2));
     }
-
     // <PARAMETROS_DECLARACION_FUNCION’> ::= COMA <TIPO> ID <PARAMETROS_DECLARACION_FUNCION’> | e
     private void generateFunctionParametersPrime(ParseTree parseTree) {
         if (parseTree.getChildren().size() == 0) {
@@ -288,7 +287,7 @@ public class TACGenerator {
             return parseTree.getLexeme();
         } else {
             if (parseTree.getChildren().get(0).getToken().equals("ID")) {
-                if (generateFunctionCall(parseTree.getChildren().get(1))) {
+                if (generateFunctionCallPrime(parseTree.getChildren().get(1))) {
                     return "call " + parseTree.getChildren().get(0).getLexeme();
                 }else{
                     String ID = parseTree.getChildren().get(0).getLexeme();
@@ -307,9 +306,6 @@ public class TACGenerator {
     }
     // <LLAMADA_FUNCION> ::=  PARENTESIS_ABRIR <PARAMETROS_LLAMADA_FUNCION> PARENTESIS_CERRAR | e
     private boolean generateFunctionCall(ParseTree parseTree) {
-        if (parseTree.getChildren().size() == 0) {
-            return false;
-        }
         generateCallFunctionParameters(parseTree.getChildren().get(1));
         return true;
     }
@@ -328,10 +324,19 @@ public class TACGenerator {
             return;
         }
         String Expression = generateExpression(parseTree.getChildren().get(0));
-        System.out.println("\twriteParam " + params.size() + " " + Expression);
-        generateCallFunctionParameters(parseTree.getChildren().get(1));
+        System.out.println("\twriteParam " + paramCounter++ + " " + Expression);
+        generateCallFunctionParametersPrime(parseTree.getChildren().get(1));
+        paramCounter = 0;
     }
     // <PARAMETROS_LLAMADA_FUNCION’> ::= COMA <EXPRESION> <PARAMETROS_LLAMADA_FUNCION’> | e
+    private void generateCallFunctionParametersPrime(ParseTree parseTree) {
+        if (parseTree.getChildren().size() == 0) {
+            return;
+        }
+        String Expression = generateExpression(parseTree.getChildren().get(1));
+        System.out.println("\twriteParam " + paramCounter++ + " " + Expression);
+        generateCallFunctionParametersPrime(parseTree.getChildren().get(2));
+    }
     // <RETORNO_EXPRESION> ::= RETORNO <EXPRESION> PUNTO_Y_COMA
     private void generateReturnStatement(ParseTree parseTree) {
         String Expression = generateExpression(parseTree.getChildren().get(1));
