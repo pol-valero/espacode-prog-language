@@ -1,11 +1,21 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 public class MIPSGenerator {
 
-
+    private void createMIPSfile(String MIPScode, String MIPSfilepath) {
+        try {
+            FileWriter fileWriter = new FileWriter(MIPSfilepath);
+            fileWriter.write(MIPScode);
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred while opening or creating " + MIPSfilepath);
+        }
+    }
     public void TACtoMIPS(String MIPSfilepath, String TACfilepath) {
 
         LinkedList<String> TACsentences;
@@ -22,13 +32,13 @@ public class MIPSGenerator {
         System.out.println("\n" + "MIPS CODE\n\n" + MIPScode);
 
 
-        //createMIPSfile(MIPScode, MIPSfilepath); //Create the code.asm file
+        createMIPSfile(MIPScode, MIPSfilepath); //Create the code.asm file
     }
 
     private String generateMIPS(LinkedList<String> TACsentences) {
         StringBuilder MIPScode = new StringBuilder();
 
-        MIPScode.append(".text\nj $main\n\n");
+        MIPScode.append(".text\nj $principal\n\n");
 
         for (String sentence : TACsentences) {
             String[] words = sentence.trim().split("\\s+"); //We remove tabs and spaces
@@ -91,7 +101,7 @@ public class MIPSGenerator {
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("The TAC file does not exist");  //TODO: Add this to ErrorHandler?
+            System.out.println("The TAC file does not exist in " + TACfilepath);  //TODO: Add this to ErrorHandler?
             return false;
         }
 

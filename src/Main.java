@@ -20,8 +20,8 @@ public class Main {
 
         String codeFilePath = "fibonacciRecSimp.ps";
 
-        String TACfilepath = "code.tac";
-        String MIPSfilepath = "code.asm";
+        String TACfilepath = "generatedCode/code.tac";
+        String MIPSfilepath = "generatedCode/code.asm";
 
         //testLexer(codeFilePath);
 

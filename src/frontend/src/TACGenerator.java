@@ -2,6 +2,8 @@ package frontend.src;
 
 import frontend.src.model.ParseTree;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -35,6 +37,16 @@ public class TACGenerator {
         operatorMap.put("DISTINTO_DE", "!=");
     }*/
     //TODO: Change the function below to generate TAC code
+
+    private void createTACfile(String TACcode, String TACfilepath) {
+        try {
+            FileWriter fileWriter = new FileWriter(TACfilepath);
+            fileWriter.write(TACcode);
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred while opening or creating " + TACfilepath);
+        }
+    }
     public void generateTAC(ParseTree parseTree, String TACfilepath) {
 
         TACcode = new StringBuilder();
@@ -43,7 +55,7 @@ public class TACGenerator {
 
         System.out.println("\n" + "TAC CODE\n\n" + TACcode.toString());
 
-        //createTACfile(TACcode.toString(), TACfilepath); //Create the code.tac file
+        createTACfile(TACcode.toString(), TACfilepath); //Create the code.tac file
 
     }
     // <CODIGO> ::= <FUNCIONES> <PRINCIPAL>
