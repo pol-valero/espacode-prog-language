@@ -271,14 +271,14 @@ public class TACGenerator {
         if (parseTree.getChildren().size() == 0) {
             return null;
         } else {
-            String Term = generateFactor(parseTree.getChildren().get(1));
-            String SecondTerm = generateTermDiv_1(parseTree.getChildren().get(2));
-            if (SecondTerm == null) {
-                return Term;
+            String Factor = generateFactor(parseTree.getChildren().get(1));
+            String SecondFactor = generateTermDiv_1(parseTree.getChildren().get(2));
+            if (SecondFactor == null) {
+                return Factor;
+            }else{
+                System.out.println("\tt" + tempCounter + " = " + Factor + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondFactor);
+                return "t" + tempCounter++;
             }
-            System.out.println("\tt" + tempCounter + " = " + Term + " " + parseTree.getChildren().get(0).getLexeme() + " " + SecondTerm); //TODO: Check
-
-            return "t" + tempCounter++;
         }
     }
     // <FACTOR> ::= ID <LLAMADA_FUNCION'> | VALOR_ENTERO | VALOR_DECIMAL | PARENTESIS_ABRIR <EXPRESION> PARENTESIS_CERRAR

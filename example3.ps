@@ -1,4 +1,4 @@
-entero fibonacci(entero var_numero , entero var) inicio
+entero fibonacci(entero var_numero) inicio
 
     si(var_numero menor 2) inicio
 
@@ -7,7 +7,7 @@ entero fibonacci(entero var_numero , entero var) inicio
     fin sino inicio
 
 	    entero resultado_fibonacci1;
-        entero resultado_fibonacci2;
+            entero resultado_fibonacci2;
 
 	    entero param1;
 	    param1 = var_numero - 1;
@@ -15,8 +15,8 @@ entero fibonacci(entero var_numero , entero var) inicio
 	    entero param2;
 	    param2 = var_numero - 2;
 
-	    resultado_fibonacci1 = fibonacci(param1 , 6);
-	    resultado_fibonacci2 = fibonacci(param2 , 7);
+	    resultado_fibonacci1 = fibonacci(param1);
+	    resultado_fibonacci2 = fibonacci(param2);
 
 	    retorno resultado_fibonacci1 + resultado_fibonacci2;
 
@@ -28,6 +28,6 @@ principal() inicio
 
     entero resultado;
 
-    resultado = fibonacci(13 , 14);
+    resultado = fibonacci(13);
 
 fin
