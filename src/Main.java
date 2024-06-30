@@ -21,6 +21,7 @@ public class Main {
         String codeFilePath = "example3.ps";
         //String codeFilePath = "FibonacciNonRecWhile.ps";
         String TACfilepath = "code.tac";
+        String MIPSfilepath = "code.asm";
 
         //testLexer(codeFilePath);
 
@@ -37,7 +38,7 @@ public class Main {
             tacGenerator.generateTAC(parseTree/*, TACfilepath*/); //TODO: Put TACfilepath as a parameter
 
             MIPSGenerator mipsGenerator = new MIPSGenerator();
-            mipsGenerator.TACtoMIPS(TACfilepath);
+            mipsGenerator.TACtoMIPS(MIPSfilepath, TACfilepath);
 
         }
 
