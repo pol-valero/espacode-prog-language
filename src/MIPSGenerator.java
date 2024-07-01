@@ -61,7 +61,11 @@ public class MIPSGenerator {
                     MIPScode.append("Error: MIPS word not recognized\n");
                 }
             } else if (words.length == 3) {
-
+                if (words[0].equals("writeParam")) {
+                    addFunctionParamInsert(MIPScode, words[1], words[2]);
+                } else if (words[0].equals("readParam")) {
+                    addFunctionParamRetrieval(MIPScode, words[1], words[2]);
+                }
             } else if (words.length == 4) {
                 if (words[1].equals("=") && words[2].equals("call")) {
                     addFunctionCallAssignation(MIPScode, words[0], words[3]);
@@ -141,6 +145,21 @@ public class MIPSGenerator {
     private void addFunctionCallAssignation(StringBuilder MIPScode, String tempVar, String function) {
             addStandaloneFunctionCall(MIPScode, function);
             MIPScode.append("\tmove $" + tempVar + ", $v0\n");
+    }
+
+    private void addFunctionParamInsert(StringBuilder MIPScode, String paramNum, String value) {
+
+        //Depending on whether the value is a constant or a temp variable, we use "li" or "move" respectively
+        if (value.contains("t")) {
+            MIPScode.append("\tmove $a" + paramNum + ", $" + value + "\n");
+        } else {
+            MIPScode.append("\tli $a" + paramNum + ", " + value + "\n");
+        }
+
+    }
+
+    private void addFunctionParamRetrieval(StringBuilder MIPScode, String paramNum, String tempVar) {
+        MIPScode.append("\tmove $" + tempVar + ", $a" + paramNum + "\n");
     }
 
     private boolean TACfileIsValid(String TACfilepath) {

@@ -2,9 +2,11 @@
 j $principal
 
 $fibonacci:
+	move $t0, $a0
 	move $v0, $t0
 	jr $ra
 $L0:
+	move $a0, $t3
 	sw $t0, -0($sp)
 	sw $t1, -4($sp)
 	sw $t2, -8($sp)
@@ -41,6 +43,7 @@ $L0:
 	lw $a4, -56($sp)
 	lw $ra, -60($sp)
 	move $t1, $v0
+	move $a0, $t5
 	sw $t0, -0($sp)
 	sw $t1, -4($sp)
 	sw $t2, -8($sp)
@@ -80,6 +83,7 @@ $L0:
 	move $v0, $t7
 	jr $ra
 $principal:
+	li $a0, 13
 	sw $t0, -0($sp)
 	sw $t1, -4($sp)
 	sw $t2, -8($sp)
