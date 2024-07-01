@@ -6,6 +6,14 @@ $fibonacci:
 	move $v0, $t0
 	jr $ra
 $L0:
+	li $t1, 0
+	li $t2, 0
+	li $t3, 0
+	subi $t4, $t0, 1
+	move $t3, $t4
+	li $t5, 0
+	subi $t6, $t0, 2
+	move $t5, $t6
 	move $a0, $t3
 	sw $t0, -0($sp)
 	sw $t1, -4($sp)
@@ -80,9 +88,11 @@ $L0:
 	lw $a4, -56($sp)
 	lw $ra, -60($sp)
 	move $t2, $v0
+	add $t7, $t1, $t2
 	move $v0, $t7
 	jr $ra
 $principal:
+	li $t8, 0
 	li $a0, 13
 	sw $t0, -0($sp)
 	sw $t1, -4($sp)

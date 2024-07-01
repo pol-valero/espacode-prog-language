@@ -65,10 +65,22 @@ public class MIPSGenerator {
                     addFunctionParamInsert(MIPScode, words[1], words[2]);
                 } else if (words[0].equals("readParam")) {
                     addFunctionParamRetrieval(MIPScode, words[1], words[2]);
+                } else if (words[1].equals("=")) {
+                    addAssignation(MIPScode, words[0], words[2]);
+                } else {
+                    MIPScode.append("Error: MIPS word not recognized\n");
                 }
             } else if (words.length == 4) {
                 if (words[1].equals("=") && words[2].equals("call")) {
                     addFunctionCallAssignation(MIPScode, words[0], words[3]);
+                } else {
+                    MIPScode.append("Error: MIPS word not recognized\n");
+                }
+            } else if (words.length == 5) {
+                if (words[1].equals("=")) {
+                    addOperationAssignation(MIPScode, words[0], words[2], words[3], words[4]);
+                } else {
+                    MIPScode.append("Error: MIPS word not recognized\n");
                 }
             }
 
@@ -160,6 +172,95 @@ public class MIPSGenerator {
 
     private void addFunctionParamRetrieval(StringBuilder MIPScode, String paramNum, String tempVar) {
         MIPScode.append("\tmove $" + tempVar + ", $a" + paramNum + "\n");
+    }
+
+    private void addAssignation(StringBuilder MIPScode, String tempVar, String value) {
+
+        //Depending on whether the value is a constant or a temp variable, we use "li" or "move" respectively
+        if (value.contains("t")) {
+            MIPScode.append("\tmove $" + tempVar + ", $" + value + "\n");
+        } else {
+            MIPScode.append("\tli $" + tempVar + ", " + value + "\n");
+        }
+
+    }
+
+    private void addOperationAssignation(StringBuilder MIPScode, String tempVar, String op1, String operator, String op2) {
+
+        switch (operator) {
+            case "+":
+
+                if (op1.contains("t") && op2.contains("t")) {
+                    MIPScode.append("\tadd $" + tempVar + ", $" + op1 + ", $" + op2 + "\n");
+                } else if (op1.contains("t") && !op2.contains("t")) {
+                    MIPScode.append("\taddi $" + tempVar + ", $" + op1 + ", " + op2 + "\n");
+                } else if (!op1.contains("t") && op2.contains("t")) {
+                    //As the sum is commutative, we can swap the operands and use the same "addi" instruction
+                    MIPScode.append("\taddi $" + tempVar + ", $" + op2 + ", " + op1 + "\n");
+                } else {
+                    //This is the case where both operands are constants, we cannot generate the MIPS instructions directly
+                    //We load the constants into registers s0 and s1 and then add them
+                    MIPScode.append("\tli $s0, " + op1 + "\n");
+                    MIPScode.append("\tli $s1, " + op2 + "\n");
+                    MIPScode.append("\tadd $" + tempVar + ", $s0, $s1"+ "\n");
+                }
+
+                break;
+
+            case "-":
+
+                if (op1.contains("t") && op2.contains("t")) {
+                    MIPScode.append("\tsub $" + tempVar + ", $" + op1 + ", $" + op2 + "\n");
+                } else if (op1.contains("t") && !op2.contains("t")) {
+                    MIPScode.append("\tsubi $" + tempVar + ", $" + op1 + ", " + op2 + "\n");
+                } else {
+                    //This is the case where the first operand is a constant or both operands are constants, we cannot generate the MIPS instructions directly
+                    //We load the constants into registers s0 and s1 and then subtract them
+                    MIPScode.append("\tli $s0, " + op1 + "\n");
+                    MIPScode.append("\tli $s1, " + op2 + "\n");
+                    MIPScode.append("\tsub $" + tempVar + ", $s0, $s1"+ "\n");
+                }
+
+                break;
+
+            case "/":
+
+                if (op1.contains("t") && op2.contains("t")) {
+                    //We can only generate the MIPS instructions directly if both operands are temp variables
+                    MIPScode.append("\tdiv $" + op1 + ", $" + op2 + "\n");
+                    MIPScode.append("\tmflo $" + tempVar + "\n");
+                } else {
+                    //This is the case where one operand is a constant or both operands are constants, we cannot generate the MIPS instructions directly
+                    //We load the constants into registers s0 and s1 and then divide them
+                    MIPScode.append("\tli $s0, " + op1 + "\n");
+                    MIPScode.append("\tli $s1, " + op2 + "\n");
+                    MIPScode.append("\tdiv $s0, $s1\n");
+                    MIPScode.append("\tmflo $" + tempVar + "\n");
+                }
+
+                break;
+
+            case "*":
+
+                if (op1.contains("t") && op2.contains("t")) {
+                    //We can only generate the MIPS instructions directly if both operands are temp variables
+                    MIPScode.append("\tmult $" + op1 + ", $" + op2 + "\n");
+                    MIPScode.append("\tmflo $" + tempVar + "\n");
+                } else {
+                    //This is the case where one operand is a constant or both operands are constants, we cannot generate the MIPS instructions directly
+                    //We load the constants into registers s0 and s1 and then multiply them
+                    MIPScode.append("\tli $s0, " + op1 + "\n");
+                    MIPScode.append("\tli $s1, " + op2 + "\n");
+                    MIPScode.append("\tmult $s0, $s1\n");
+                    MIPScode.append("\tmflo $" + tempVar + "\n");
+                }
+
+                break;
+
+            default:
+                MIPScode.append("Error: Operator not recognized\n");
+        }
+
     }
 
     private boolean TACfileIsValid(String TACfilepath) {
