@@ -82,6 +82,14 @@ public class MIPSGenerator {
                 } else {
                     MIPScode.append("Error: MIPS word not recognized\n");
                 }
+            } else if (words.length == 6) {
+                if (words[0].equals("if")) {
+                    addConditional(MIPScode, words[1], words[2], words[3], words[5]);
+                } else {
+                    MIPScode.append("Error: MIPS word not recognized\n");
+                }
+            } else {
+                MIPScode.append("Error: MIPS word not recognized\n");
             }
 
 
@@ -117,7 +125,7 @@ public class MIPSGenerator {
             MIPScode.append("\tsw $t" + i + ", -" + i * 4 + "($sp)\n");
         }
 
-        for (j = 0; j < 5; j++) {
+        for (j = 0; j < 4; j++) {
             //We save in the RAM the 4 registers (a0-a3) that can be used to pass arguments to the functions
             MIPScode.append("\tsw $a" + j + ", -" + i * 4 + "($sp)\n");
             i++;
@@ -127,23 +135,23 @@ public class MIPSGenerator {
         MIPScode.append("\tsw $ra, -" + i * 4 + "($sp)\n");
 
 
-        //The stack pointer is decremented by 4 bytes for each register (60 bytes total), as the stack grows downwards.
+        //The stack pointer is decremented by 4 bytes for each register (56 bytes total), as the stack grows downwards.
         //Although the "subi" operation does not exist in MIPS, the program MARS4.5 allows it (it is a pseudo-instruction)
-        MIPScode.append("\tsubi $sp, $sp, 60\n");
+        MIPScode.append("\tsubi $sp, $sp, 56\n");
 
 
         //Make the function call
         MIPScode.append("\tjal $" + function + "\n");
 
         //Restore the registers, loading from RAM
-        MIPScode.append("\taddi $sp, $sp, 60\n");
+        MIPScode.append("\taddi $sp, $sp, 56\n");
 
         for (i = 0; i < 10; i++) {
             //We load from the RAM the 10 registers (t0-t9) that can be used to store temp info in the function
             MIPScode.append("\tlw $t" + i + ", -" + i * 4 + "($sp)\n");
         }
 
-        for (j = 0; j < 5; j++) {
+        for (j = 0; j < 4; j++) {
             //We load from the RAM the 4 registers (a0-a3) that can be used to pass arguments to the functions
             MIPScode.append("\tlw $a" + j + ", -" + i * 4 + "($sp)\n");
             i++;
@@ -261,6 +269,89 @@ public class MIPSGenerator {
                 MIPScode.append("Error: Operator not recognized\n");
         }
 
+    }
+
+    private void addConditional(StringBuilder MIPScode, String op1, String operator, String op2, String label) {
+
+        switch (operator) {
+            case "!=":
+
+                if (op1.contains("t") && op2.contains("t")) {
+                    //We can only generate the MIPS instructions directly if both operands are temp variables
+                    MIPScode.append("\tbne $" + op1 + ", $" + op2 + ", $" + label + "\n");
+                } else {
+                    //This is the case where one operand is a constant or both operands are constants, we cannot generate the MIPS instructions directly
+                    //We load the constants into registers s0 and s1
+                    MIPScode.append("\tli $s0, " + op1 + "\n");
+                    MIPScode.append("\tli $s1, " + op2 + "\n");
+                    MIPScode.append("\tbne $s0, $s1, $" + label + "\n");
+                }
+
+                break;
+
+            case ">":
+
+                if (op1.contains("t") && op2.contains("t")) {
+                    //We can only generate the MIPS instructions directly if both operands are temp variables
+                    MIPScode.append("\tbgt $" + op1 + ", $" + op2 + ", $" + label + "\n");
+                } else {
+                    //This is the case where one operand is a constant or both operands are constants, we cannot generate the MIPS instructions directly
+                    //We load the constants into registers s0 and s1
+                    MIPScode.append("\tli $s0, " + op1 + "\n");
+                    MIPScode.append("\tli $s1, " + op2 + "\n");
+                    MIPScode.append("\tbgt $s0, $s1, $" + label + "\n");
+                }
+
+                break;
+
+            case "<":
+
+                if (op1.contains("t") && op2.contains("t")) {
+                    //We can only generate the MIPS instructions directly if both operands are temp variables
+                    MIPScode.append("\tblt $" + op1 + ", $" + op2 + ", $" + label + "\n");
+                } else {
+                    //This is the case where one operand is a constant or both operands are constants, we cannot generate the MIPS instructions directly
+                    //We load the constants into registers s0 and s1
+                    MIPScode.append("\tli $s0, " + op1 + "\n");
+                    MIPScode.append("\tli $s1, " + op2 + "\n");
+                    MIPScode.append("\tblt $s0, $s1, $" + label + "\n");
+                }
+
+                break;
+
+            case ">=":
+
+                if (op1.contains("t") && op2.contains("t")) {
+                    //We can only generate the MIPS instructions directly if both operands are temp variables
+                    MIPScode.append("\tbge $" + op1 + ", $" + op2 + ", $" + label + "\n");
+                } else {
+                    //This is the case where one operand is a constant or both operands are constants, we cannot generate the MIPS instructions directly
+                    //We load the constants into registers s0 and s1
+                    MIPScode.append("\tli $s0, " + op1 + "\n");
+                    MIPScode.append("\tli $s1, " + op2 + "\n");
+                    MIPScode.append("\tbge $s0, $s1, $" + label + "\n");
+                }
+
+                break;
+
+            case "<=":
+
+                if (op1.contains("t") && op2.contains("t")) {
+                    //We can only generate the MIPS instructions directly if both operands are temp variables
+                    MIPScode.append("\tble $" + op1 + ", $" + op2 + ", $" + label + "\n");
+                } else {
+                    //This is the case where one operand is a constant or both operands are constants, we cannot generate the MIPS instructions directly
+                    //We load the constants into registers s0 and s1
+                    MIPScode.append("\tli $s0, " + op1 + "\n");
+                    MIPScode.append("\tli $s1, " + op2 + "\n");
+                    MIPScode.append("\tble $s0, $s1, $" + label + "\n");
+                }
+
+                break;
+
+            default:
+                break;
+        }
     }
 
     private boolean TACfileIsValid(String TACfilepath) {

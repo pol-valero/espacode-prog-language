@@ -3,6 +3,9 @@ j $principal
 
 $fibonacci:
 	move $t0, $a0
+	li $s0, t0
+	li $s1, 2
+	bge $s0, $s1, $L0
 	move $v0, $t0
 	jr $ra
 $L0:
@@ -29,11 +32,10 @@ $L0:
 	sw $a1, -44($sp)
 	sw $a2, -48($sp)
 	sw $a3, -52($sp)
-	sw $a4, -56($sp)
-	sw $ra, -60($sp)
-	subi $sp, $sp, 60
+	sw $ra, -56($sp)
+	subi $sp, $sp, 56
 	jal $fibonacci
-	addi $sp, $sp, 60
+	addi $sp, $sp, 56
 	lw $t0, -0($sp)
 	lw $t1, -4($sp)
 	lw $t2, -8($sp)
@@ -48,8 +50,7 @@ $L0:
 	lw $a1, -44($sp)
 	lw $a2, -48($sp)
 	lw $a3, -52($sp)
-	lw $a4, -56($sp)
-	lw $ra, -60($sp)
+	lw $ra, -56($sp)
 	move $t1, $v0
 	move $a0, $t5
 	sw $t0, -0($sp)
@@ -66,11 +67,10 @@ $L0:
 	sw $a1, -44($sp)
 	sw $a2, -48($sp)
 	sw $a3, -52($sp)
-	sw $a4, -56($sp)
-	sw $ra, -60($sp)
-	subi $sp, $sp, 60
+	sw $ra, -56($sp)
+	subi $sp, $sp, 56
 	jal $fibonacci
-	addi $sp, $sp, 60
+	addi $sp, $sp, 56
 	lw $t0, -0($sp)
 	lw $t1, -4($sp)
 	lw $t2, -8($sp)
@@ -85,15 +85,14 @@ $L0:
 	lw $a1, -44($sp)
 	lw $a2, -48($sp)
 	lw $a3, -52($sp)
-	lw $a4, -56($sp)
-	lw $ra, -60($sp)
+	lw $ra, -56($sp)
 	move $t2, $v0
 	add $t7, $t1, $t2
 	move $v0, $t7
 	jr $ra
 $principal:
 	li $t8, 0
-	li $a0, 13
+	li $a0, 8
 	sw $t0, -0($sp)
 	sw $t1, -4($sp)
 	sw $t2, -8($sp)
@@ -108,11 +107,10 @@ $principal:
 	sw $a1, -44($sp)
 	sw $a2, -48($sp)
 	sw $a3, -52($sp)
-	sw $a4, -56($sp)
-	sw $ra, -60($sp)
-	subi $sp, $sp, 60
+	sw $ra, -56($sp)
+	subi $sp, $sp, 56
 	jal $fibonacci
-	addi $sp, $sp, 60
+	addi $sp, $sp, 56
 	lw $t0, -0($sp)
 	lw $t1, -4($sp)
 	lw $t2, -8($sp)
@@ -127,6 +125,5 @@ $principal:
 	lw $a1, -44($sp)
 	lw $a2, -48($sp)
 	lw $a3, -52($sp)
-	lw $a4, -56($sp)
-	lw $ra, -60($sp)
+	lw $ra, -56($sp)
 	move $t8, $v0

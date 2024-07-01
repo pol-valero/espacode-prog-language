@@ -21,5 +21,5 @@ L0:
 
 principal:
 	t8 = 0
-	writeParam 0 13
+	writeParam 0 8
 	t8 = call fibonacci
