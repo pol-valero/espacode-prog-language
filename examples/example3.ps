@@ -1,0 +1,25 @@
+entero test(entero var, entero arg) inicio
+
+    var = var + 1;
+    arg = arg + 2;
+
+    entero i = 0;
+
+    mientras (i menor 3) inicio
+
+        var = var + 1;
+        arg = arg + 2;
+
+        i = i + 1;
+
+    fin
+
+    retorno var + arg;
+
+fin
+
+principal() inicio
+
+    entero resultado = test(1, 2);
+
+fin

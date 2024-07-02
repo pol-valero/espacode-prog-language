@@ -33,7 +33,7 @@
   },
   {
       "token": "VALOR_DECIMAL",
-      "regex": "^-?\\d+\\.\\d$"
+      "regex": "^-?\\d+\\.\\d+$"
   },
   {
     "token": "IGUAL_ASIGNACION",

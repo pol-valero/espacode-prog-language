@@ -1,4 +1,4 @@
-package frontend.src.model;
+package frontend.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,6 @@ public class ParseTree {
     private String token;
     private String lexeme;
     private List<ParseTree> children;
-
-    //TODO: Add "node" class (order of the children is important. ex.- to do operations)?
 
     public ParseTree(String token) {
         this.token = token;
@@ -23,7 +21,7 @@ public class ParseTree {
 
     public void addChild(ParseTree child) {
 
-        //If the match method finds an error and return null, we will not add the child to the tree. TODO: Check if this is the correct approach
+        //If the match method finds an error and return null, we will not add the child to the tree.
         //if (child != null) {
             children.add(child);
         //}

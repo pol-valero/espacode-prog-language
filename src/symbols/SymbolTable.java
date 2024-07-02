@@ -1,10 +1,10 @@
-package frontend.src;
+package symbols;
 
 import java.util.HashMap;
+import errors.ErrorHandler;
 
-class SymbolTable {
+public class SymbolTable {
     private HashMap<String, SymbolTableEntry> symbolTable;
-    private StringBuilder errors = new StringBuilder();
 
 
     public SymbolTable() {
@@ -13,7 +13,7 @@ class SymbolTable {
 
     public void addVariableEntry(String key, String type, int line) {
         if (symbolTable.containsKey(key)) {
-            String error = "ERROR line " + line + ": " + "the id \"" + key + "\" is already declared.\n";
+            String error = "Error Linia " + line + ":\n\t" + "Error de semantica: La variable " + key + " ya esta declarada\n";
             throwError(error);
         } else {
             SymbolTableEntry entry = new SymbolTableEntry(key, type, line);
@@ -23,7 +23,7 @@ class SymbolTable {
 
     public void addFunctionEntry(String type, String key, int line) {
         if (symbolTable.containsKey(key)) {
-            String error = "ERROR line " + line + ": " + "the function \"" + key + "\" is already declared.\n";
+            String error = "Error Linia " + line + ":\n\t" + "Error de semantica: La funcion " + key + " ya esta declarada\n";
             throwError(error);
         } else {
             SymbolTableEntry entry = new SymbolTableEntry(key, type, true, line);

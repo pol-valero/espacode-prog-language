@@ -1,4 +1,4 @@
-package frontend.src;
+package frontend.model;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -23,7 +23,7 @@ public class Dictionary {
         Type listType = new TypeToken<ArrayList<DictionaryEntry>>() {
         }.getType();
 
-        String dictionaryFile = "dictionary.json";
+        String dictionaryFile = "src/frontend/model/dictionary.json";
 
         try {
             dictionary = gson.fromJson(new FileReader(dictionaryFile), listType);

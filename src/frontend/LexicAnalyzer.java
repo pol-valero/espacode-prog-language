@@ -1,4 +1,8 @@
-package frontend.src;
+package frontend;
+
+import errors.ErrorHandler;
+import frontend.model.Dictionary;
+import frontend.model.TokenData;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -87,11 +91,11 @@ public class LexicAnalyzer {
 
                 //Check if token is a negative number. If it is, we avoid splitting the token by the "-" sign.
                 if (token.contains("-") && token.length() > 1 && Character.isDigit(token.charAt(1)) ) {
-                    String[] splitChars = token.split("(?=[{}();+*/'])|(?<=[{}();+*/'])");    //We avoid splitting by "-"
+                    String[] splitChars = token.split("(?=[{}();+*/',])|(?<=[{}();+*/',])");    //We avoid splitting by "-"
                     Collections.addAll(queue, splitChars);
                 } else {
                     //To adapt into our system we use a queue to get all tokens split.
-                    String[] splitChars = token.split("(?=[{}();+\\-*/'])|(?<=[{}();+\\-*/'])");
+                    String[] splitChars = token.split("(?=[{}();+\\-*/',])|(?<=[{}();+\\-*/',])");
                     Collections.addAll(queue, splitChars);
                 }
                 if (!queue.isEmpty()) {
@@ -110,41 +114,6 @@ public class LexicAnalyzer {
             }
         } else {
             return queue.poll();
-        }
-    }
-
-    //We return the next lexeme, but it stays in the queue
-    private String peekNextLexeme() {
-        if (queue.isEmpty()) {
-            if (scanner.hasNext()) {
-                //String token = scanner.next();
-                String token = getScannerNext();
-
-                //Check if token is a negative number. If it is, we avoid splitting the token by the "-" sign.
-                if (token.contains("-") && token.length() > 1 && Character.isDigit(token.charAt(1)) ) {
-                    String[] splitChars = token.split("(?=[{}();+*/'])|(?<=[{}();+*/'])");    //We avoid splitting by "-"
-                    Collections.addAll(queue, splitChars);
-                } else {
-                    //To adapt into our system we use a queue to get all tokens split.
-                    String[] splitChars = token.split("(?=[{}();+\\-*/'])|(?<=[{}();+\\-*/'])");
-                    Collections.addAll(queue, splitChars);
-                }
-                if (!queue.isEmpty()) {
-                    return queue.peek();
-                } else {
-                    ////////////////////////////////
-                    if (scanner.hasNext()) {
-                        return peekNextLexeme();
-                    } else {
-                        return null;
-                    }
-                    ///////////////////////////////
-                }
-            } else {
-                return null;
-            }
-        } else {
-            return queue.peek();
         }
     }
 
@@ -170,29 +139,17 @@ public class LexicAnalyzer {
 
     }
 
-    //TODO: Remove at the end. Probably no longer necessary
-    /*public TokenData peekNextToken() {
-        String lexeme = peekNextLexeme();
-        String token;
+    public void testLexer(String codeFilePath) {
+        LexicAnalyzer lexicAnalyzer = new LexicAnalyzer(codeFilePath);
 
-        if (lexeme != null && !lexeme.equals("")) {
-            token = Dictionary.findToken(lexeme);
+        TokenData tokenData = lexicAnalyzer.getNextToken();
 
-            if (token.equals("UNKNOWN")) {
-                ErrorHandler.addError("Error Linia " + currentWordLineNum + ":\n\t" + "Error de lexico: Token '" + lexeme + "' no conocido");
-                return getNextToken();
-            }
+        while (!tokenData.equals("EOF")) {
 
-            return new TokenData(lexeme, token, currentWordLineNum);
-        } else {
-            //return null;
-            return new TokenData("#", "EOF", currentWordLineNum); //# is the EOF token
+            System.out.println("Line: " + tokenData.getLine() + " - " + tokenData.getLexeme() + " -> " + tokenData.getToken());
+            tokenData = lexicAnalyzer.getNextToken();
+
         }
-    }*/
-
-    //TODO: Remove. Substituted by "line" field in TokenData
-    public int getLineNumber() {
-        return lineNumCounter;
     }
 
 }
