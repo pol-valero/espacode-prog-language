@@ -1,3 +1,5 @@
+package backend;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -48,7 +50,7 @@ public class MIPSGenerator {
                     addLabel(MIPScode, words[0]);
                 } else {
                     MIPScode.append("Error: MIPS word not recognized\n");
-                    //TODO: Add all errors like this to ErrorHandler?
+                    //TODO: Add all errors like this to errors.ErrorHandler?
                 }
             } else if (words.length == 2) {
                 if (words[0].equals("return")) {
@@ -417,12 +419,12 @@ public class MIPSGenerator {
             scanner = new Scanner(new File(TACfilepath));
 
             if (!scanner.hasNext()) {
-                System.out.println("The TAC file is empty");    //TODO: Add this to ErrorHandler?
+                System.out.println("The TAC file is empty");    //TODO: Add this to errors.ErrorHandler?
                 return false;
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("The TAC file does not exist in " + TACfilepath);  //TODO: Add this to ErrorHandler?
+            System.out.println("The TAC file does not exist in " + TACfilepath);  //TODO: Add this to errors.ErrorHandler?
             return false;
         }
 

@@ -1,8 +1,8 @@
-package frontend.src;
+package frontend.model;
 
 public class TokenData {
     private String lexeme;
-    private String token; //TODO: Create "Token" enum?
+    private String token;
 
     private int line;
 

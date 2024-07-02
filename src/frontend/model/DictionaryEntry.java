@@ -1,4 +1,4 @@
-package frontend.src;
+package frontend.model;
 
 public class DictionaryEntry {
     private String token;

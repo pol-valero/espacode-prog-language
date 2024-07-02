@@ -1,6 +1,8 @@
-package frontend.src;
+package symbols;
 
-class SymbolTableEntry {
+import symbols.SymbolTable;
+
+public class SymbolTableEntry {
     private String key;
     private String type;
     private Integer line;

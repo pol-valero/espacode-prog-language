@@ -1,4 +1,4 @@
-package frontend.src;
+package errors;
 
 public class ErrorHandler {
 

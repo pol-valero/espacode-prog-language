@@ -1,6 +1,6 @@
-package frontend.src;
+package frontend;
 
-import frontend.src.model.ParseTree;
+import frontend.model.ParseTree;
 
 import java.io.FileWriter;
 import java.io.IOException;

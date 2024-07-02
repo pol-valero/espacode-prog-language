@@ -1,8 +1,9 @@
-package frontend.src;
+package symbols;
 
 import java.util.HashMap;
+import errors.ErrorHandler;
 
-class SymbolTable {
+public class SymbolTable {
     private HashMap<String, SymbolTableEntry> symbolTable;
 
 

@@ -1,6 +1,9 @@
-package frontend.src;
+package frontend;
 
-import frontend.src.model.ParseTree;
+import errors.ErrorHandler;
+import frontend.model.ParseTree;
+import symbols.SymbolTable;
+import symbols.SymbolTableEntry;
 
 import java.util.ArrayList;
 import java.util.List;

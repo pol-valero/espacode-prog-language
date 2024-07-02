@@ -1,5 +1,8 @@
-import frontend.src.*;
-import frontend.src.model.ParseTree;
+import backend.MIPSGenerator;
+import errors.ErrorHandler;
+import frontend.*;
+import frontend.model.ParseTree;
+import frontend.model.TokenData;
 
 public class Main {
 
@@ -18,7 +21,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String codeFilePath = "example3.ps";
+        String codeFilePath = "examples/example3.ps";
 
         String TACfilepath = "generatedCode/code.tac";
         String MIPSfilepath = "generatedCode/code.asm";

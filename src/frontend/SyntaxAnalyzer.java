@@ -1,7 +1,8 @@
-package frontend.src;
+package frontend;
 
-import frontend.src.exceptions.SyntaxException;
-import frontend.src.model.ParseTree;
+import errors.ErrorHandler;
+import frontend.model.ParseTree;
+import frontend.model.TokenData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
