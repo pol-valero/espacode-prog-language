@@ -69,14 +69,15 @@ public class SyntaxAnalyzer {
         funcion.addChild(tipoFuncion());
         funcion.addChild(match("ID"));
         funcion.addChild(match("PARENTESIS_ABRIR"));
-        funcion.addChild(parametrosDeclaracionFuncion());
-        funcion.addChild(match("PARENTESIS_CERRAR"));
 
         try{
             this.scope = semanticAnalyzer.addFunction(funcion, this.currentToken.getLine());
         } catch (Exception e){
             //This is already handled by parser (a syntax error will be displayed)
         }
+
+        funcion.addChild(parametrosDeclaracionFuncion());
+        funcion.addChild(match("PARENTESIS_CERRAR"));
 
         funcion.addChild(bloque(followers));
 
@@ -121,6 +122,13 @@ public class SyntaxAnalyzer {
         if (currentToken.equals("TIPO_ENTERO") || currentToken.equals("TIPO_DECIMAL") || currentToken.equals("TIPO_CARACTER")) {
             parametrosDeclaracionFuncion.addChild(tipo());
             parametrosDeclaracionFuncion.addChild(match("ID"));
+
+            try{
+                semanticAnalyzer.addEntry(parametrosDeclaracionFuncion, this.scope, this.currentToken.getLine());
+            } catch (Exception e){
+                //This is already handled by parser (a syntax error will be displayed)
+            }
+
             parametrosDeclaracionFuncion.addChild(parametrosDeclaracionFuncionPrime());
         }
 
@@ -136,6 +144,18 @@ public class SyntaxAnalyzer {
             parametrosDeclaracionFuncionPrime.addChild(match("COMA"));
             parametrosDeclaracionFuncionPrime.addChild(tipo());
             parametrosDeclaracionFuncionPrime.addChild(match("ID"));
+
+            try{
+
+                ParseTree parametro = new ParseTree("PARAMETRO (TYPE, ID)");
+                parametro.addChild(parametrosDeclaracionFuncionPrime.getChildren().get(1));
+                parametro.addChild(parametrosDeclaracionFuncionPrime.getChildren().get(2));
+
+                semanticAnalyzer.addEntry(parametro, this.scope, this.currentToken.getLine());
+            } catch (Exception e){
+                //This is already handled by parser (a syntax error will be displayed)
+            }
+
             parametrosDeclaracionFuncionPrime.addChild(parametrosDeclaracionFuncionPrime());
         }
 

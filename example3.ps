@@ -1,33 +1,25 @@
-entero fibonacci(entero var_numero) inicio
+entero test(entero var, entero arg) inicio
 
-    si(var_numero menor 2) inicio
+    var = var + 1;
+    arg = arg + 2;
 
-		retorno var_numero;
+    entero i = 0;
 
-    fin sino inicio
+    mientras (i menor 3) inicio
 
-	    entero resultado_fibonacci1;
-            entero resultado_fibonacci2;
+        var = var + 1;
+        arg = arg + 2;
 
-	    entero param1;
-	    param1 = var_numero - 1;
+        i = i + 1;
 
-	    entero param2;
-	    param2 = var_numero - 2;
+    fin
 
-	    resultado_fibonacci1 = fibonacci(param1);
-	    resultado_fibonacci2 = fibonacci(param2);
-
-	    retorno resultado_fibonacci1 + resultado_fibonacci2;
-
-	fin
+    retorno var + arg;
 
 fin
 
 principal() inicio
 
-    entero resultado;
-
-    resultado = fibonacci(13);
+    entero resultado = test(1, 2);
 
 fin

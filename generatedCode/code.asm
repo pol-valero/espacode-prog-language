@@ -3,12 +3,29 @@ j $principal
 
 $test:
 	move $t0, $a0
+	move $t1, $a1
+	addi $t2, $t0, 1
+	move $t0, $t2
+	addi $t3, $t1, 2
+	move $t1, $t3
+	li $t4, 0
+$L0:
+	li $s1, 3
+	bge $t4, $s1, $L1
+	addi $t5, $t0, 1
+	move $t0, $t5
+	addi $t6, $t1, 2
+	move $t1, $t6
+	addi $t7, $t4, 1
+	move $t4, $t7
+	j $L0
+$L1:
+	add $t8, $t0, $t1
+	move $v0, $t8
+	jr $ra
 $principal:
-	li $t1, 0
-	li $t2, a
-	li $t3, 0
-	li $t3, a
-	li $a0, 13
+	li $a0, 1
+	li $a1, 2
 	sw $t0, -4($sp)
 	sw $t1, -8($sp)
 	sw $t2, -12($sp)
@@ -42,4 +59,4 @@ $principal:
 	lw $a2, -52($sp)
 	lw $a3, -56($sp)
 	lw $ra, -60($sp)
-	move $t1, $v0
+	move $t9, $v0
