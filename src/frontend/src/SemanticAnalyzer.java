@@ -40,9 +40,10 @@ public class SemanticAnalyzer {
 
     public static List<String> findTokensContainingValue(ParseTree node) {
         List<String> tokensContainingValue = new ArrayList<>();
-        findTokensContainingValueHelper(node, "VALOR", tokensContainingValue);
-        findTokensContainingValueHelper(node, "CARACTER", tokensContainingValue);
-        //If it finds VALOR_ENTERO, VALOR_CARACTER or CARACTER' tokens, it will add them to the list
+        findTokensContainingValueHelper(node, "VALOR_ENTERO", tokensContainingValue);
+        findTokensContainingValueHelper(node, "VALOR_DECIMAL", tokensContainingValue);
+        findTokensContainingValueHelper(node, "CARACTER'", tokensContainingValue);
+        //If it finds VALOR_ENTERO, VALOR_CARACTER or CARACTER', it will add them to the list
         return tokensContainingValue;
     }
 
@@ -52,13 +53,39 @@ public class SemanticAnalyzer {
             return;
         }
 
-        if (node.getToken() != null && node.getToken().contains(value)) {
+        if (node.getToken() != null && node.getToken().equals(value)) {
             result.add(node.getToken());
         }
         for (ParseTree child : node.getChildren()) {
             findTokensContainingValueHelper(child, value, result);
         }
     }
+
+
+    public List<String> findVariables(ParseTree node) {
+
+        List<String> variables = new ArrayList<>();
+
+        findVariablesHelper(node, variables);
+
+        return variables;
+    }
+
+    private void findVariablesHelper(ParseTree node, List<String> variables) {
+
+        if (node == null) {
+            return;
+        }
+
+        if (node.getToken() != null && node.getToken().equals("ID")) {
+            variables.add(node.getLexeme());
+        }
+        for (ParseTree child : node.getChildren()) {
+            findVariablesHelper(child, variables);
+        }
+
+    }
+
 
 
     public void checkAssignation(ParseTree parseTree, String scope, int line){
@@ -80,8 +107,10 @@ public class SemanticAnalyzer {
         if(functionScope != null){
             SymbolTableEntry entry = functionScope.getSymbolTable().find(key);
             if(entry != null){
-            List<String> valors = findTokensContainingValue(parseTree);
-            String type = entry.getType();
+
+                //Check if the constant values (VALOR_ENTERO, VALOR_DECIMAL, CARACTER') in the assignation are the same type as the variable that is left of the assignation
+                List<String> valors = findTokensContainingValue(parseTree);
+                String type = entry.getType();
                 for(String token : valors) {
                     if(type.equals("TIPO_ENTERO")){
                         if(!token.equals("VALOR_ENTERO")){
@@ -96,12 +125,26 @@ public class SemanticAnalyzer {
                         }
                     }
                     if(type.equals("TIPO_CARACTER")){
-                        if(!token.equals("CARACTER'") && !token.equals("CARACTER") && !token.equals("TIPO_CARACTER")){
+                        if(!token.equals("CARACTER'")){
                             ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En la asignacion de '" + key + "' " + "los tipos de valor no coinciden \n");
                             break;
                         }
                     }
                 }
+
+                //Check if the variables in the assignation have the same type as the variable that is left of the assignation
+                List<String> variables = findVariables(parseTree);
+
+                for(String variable : variables){
+                    SymbolTableEntry entry2 = functionScope.getSymbolTable().find(variable);
+                    if(entry2 != null){
+                        if(!entry2.getType().equals(type)){
+                            ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En la asignacion de '" + key + "' " + "los tipos de valor no coinciden \n");
+                            break;
+                        }
+                    }
+                }
+
             } else {
                 ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: " + key + " " +"no se ha declarado\n");
             }
@@ -111,11 +154,6 @@ public class SemanticAnalyzer {
         }
     }
 
-    private void error(String line, String idRelatedToError, String errorMsg) {
-
-        ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: " + idRelatedToError + " " + errorMsg + "\n");
-
-    }
 
 }
 
