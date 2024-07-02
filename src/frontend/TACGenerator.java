@@ -1,5 +1,6 @@
 package frontend;
 
+import errors.ErrorHandler;
 import frontend.model.ParseTree;
 
 import java.io.FileWriter;
@@ -18,7 +19,7 @@ public class TACGenerator {
     private static final Map<String, String> operatorMap = new HashMap<>();
 
     private StringBuilder TACcode;
-    // Este esta todo negado
+
     static {
         operatorMap.put("MAYOR_O_IGUAL", "<");
         operatorMap.put("MENOR_O_IGUAL", ">");
@@ -36,7 +37,6 @@ public class TACGenerator {
         operatorMap.put("IGUAL_COMPARACION", "==");
         operatorMap.put("DISTINTO_DE", "!=");
     }*/
-    //TODO: Change the function below to generate TAC code
 
     private void createTACfile(String TACcode, String TACfilepath) {
         try {
@@ -44,7 +44,7 @@ public class TACGenerator {
             fileWriter.write(TACcode);
             fileWriter.close();
         } catch (IOException e) {
-            System.out.println("An error occurred while opening or creating " + TACfilepath);
+            ErrorHandler.addTACgenErrors("An error occurred while opening or creating " + TACfilepath);
         }
     }
     public void generateTAC(ParseTree parseTree, String TACfilepath) {

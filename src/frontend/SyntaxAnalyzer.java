@@ -18,6 +18,9 @@ public class SyntaxAnalyzer {
         this.lexicAnalyzer = new LexicAnalyzer(codeFilePath);
         this.semanticAnalyzer = new SemanticAnalyzer();
         this.scope = "main";
+
+        //lexicAnalyzer.testLexer(codeFilePath);
+
     }
 
     public ParseTree syntaxAnalysis() {

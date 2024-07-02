@@ -2,22 +2,8 @@ import backend.MIPSGenerator;
 import errors.ErrorHandler;
 import frontend.*;
 import frontend.model.ParseTree;
-import frontend.model.TokenData;
 
 public class Main {
-
-    private static void testLexer(String codeFilePath) {
-        LexicAnalyzer lexicAnalyzer = new LexicAnalyzer(codeFilePath);
-
-        TokenData tokenData = lexicAnalyzer.getNextToken();
-
-        while (!tokenData.equals("EOF")) {
-
-            System.out.println("Line: " + tokenData.getLine() + " - " + tokenData.getLexeme() + " -> " + tokenData.getToken());
-            tokenData = lexicAnalyzer.getNextToken();
-
-        }
-    }
 
     public static void main(String[] args) {
 
@@ -26,7 +12,6 @@ public class Main {
         String TACfilepath = "generatedCode/code.tac";
         String MIPSfilepath = "generatedCode/code.asm";
 
-        //testLexer(codeFilePath);
 
         SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(codeFilePath);
 
@@ -35,15 +20,24 @@ public class Main {
         //System.out.println(parseTree);
 
         if (ErrorHandler.hasErrors()){
+
             System.out.println(ErrorHandler.getErrors());
+
         } else {
+
             TACGenerator tacGenerator = new TACGenerator();
             tacGenerator.generateTAC(parseTree, TACfilepath);
 
             MIPSGenerator mipsGenerator = new MIPSGenerator();
             mipsGenerator.TACtoMIPS(MIPSfilepath, TACfilepath);
 
-            //TODO: Print ErrorHandler.getTacMipsErrors();
+            if (ErrorHandler.hasTACgenErrors()){
+                System.out.println(ErrorHandler.getTACgenErrors());
+            }
+
+            if (ErrorHandler.hasMIPSgenErrors()){
+                System.out.println(ErrorHandler.getMIPSgenErrors());
+            }
 
         }
 

@@ -139,4 +139,17 @@ public class LexicAnalyzer {
 
     }
 
+    public void testLexer(String codeFilePath) {
+        LexicAnalyzer lexicAnalyzer = new LexicAnalyzer(codeFilePath);
+
+        TokenData tokenData = lexicAnalyzer.getNextToken();
+
+        while (!tokenData.equals("EOF")) {
+
+            System.out.println("Line: " + tokenData.getLine() + " - " + tokenData.getLexeme() + " -> " + tokenData.getToken());
+            tokenData = lexicAnalyzer.getNextToken();
+
+        }
+    }
+
 }
