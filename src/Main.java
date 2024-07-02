@@ -18,7 +18,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String codeFilePath = "fibonacciNonRecWhile.ps";
+        String codeFilePath = "example1.ps";
 
         String TACfilepath = "generatedCode/code.tac";
         String MIPSfilepath = "generatedCode/code.asm";
@@ -39,6 +39,8 @@ public class Main {
 
             MIPSGenerator mipsGenerator = new MIPSGenerator();
             mipsGenerator.TACtoMIPS(MIPSfilepath, TACfilepath);
+
+            //TODO: Print ErrorHandler.getTacMipsErrors();
 
         }
 

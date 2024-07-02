@@ -71,11 +71,13 @@ public class SyntaxAnalyzer {
         funcion.addChild(match("PARENTESIS_ABRIR"));
         funcion.addChild(parametrosDeclaracionFuncion());
         funcion.addChild(match("PARENTESIS_CERRAR"));
+
         try{
             this.scope = semanticAnalyzer.addFunction(funcion, this.currentToken.getLine());
         } catch (Exception e){
-            // this is already handled. Utilitzar var aux en comptes de try catch?
+            //This is already handled by parser (a syntax error will be displayed)
         }
+
         funcion.addChild(bloque(followers));
 
         return funcion;
@@ -186,6 +188,15 @@ public class SyntaxAnalyzer {
         } else if (currentToken.equals("ID")) {
             sentenciaSubbloque.addChild(match("ID"));
             sentenciaSubbloque.addChild(sentenciaIDsubbloque(followers));
+
+            try {
+
+                semanticAnalyzer.checkAssignation(sentenciaSubbloque, scope, currentToken.getLine());
+
+            } catch (Exception e){
+                //This is already handled by parser (a syntax error will be displayed)
+            }
+
         } else if (currentToken.equals("MIENTRAS")) {
             sentenciaSubbloque.addChild(mientrasExpresion(followers));
         } else if (currentToken.equals("SI")) {
@@ -206,11 +217,17 @@ public class SyntaxAnalyzer {
         declaracionVariable.addChild(match("ID"));
         declaracionVariable.addChild(declaracionVariablePrime(followers));
 
-        semanticAnalyzer.addEntry(declaracionVariable, this.scope, this.currentToken.getLine());
 
+        try {
 
-        if(!declaracionVariable.getChildren().get(2).getChildren().get(0).getToken().equals("PUNTO_Y_COMA")){
-            semanticAnalyzer.checkAssignation(declaracionVariable, scope,currentToken.getLine());
+            semanticAnalyzer.addEntry(declaracionVariable, this.scope, this.currentToken.getLine());
+
+            if (!declaracionVariable.getChildren().get(2).getChildren().get(0).getToken().equals("PUNTO_Y_COMA")) {
+                semanticAnalyzer.checkAssignation(declaracionVariable, scope, currentToken.getLine());
+            }
+
+        } catch (Exception e){
+            //This is already handled by parser (a syntax error will be displayed)
         }
 
         return declaracionVariable;
@@ -573,11 +590,13 @@ public class SyntaxAnalyzer {
         principal.addChild(match("PRINCIPAL", followers));
         principal.addChild(match("PARENTESIS_ABRIR"));
         principal.addChild(match("PARENTESIS_CERRAR"));
+
         try{
             this.scope = semanticAnalyzer.addPrincipal(this.currentToken.getLine());
         } catch (Exception e){
-            // this is already handled. Utilitzar var aux en comptes de try catch?
+            //This is already handled by parser (a syntax error will be displayed)
         }
+
         principal.addChild(bloque(followers));
 
         return principal;
@@ -617,7 +636,7 @@ public class SyntaxAnalyzer {
 
     private void error(String expectedToken, List<String> followers) /*throws SyntaxException*/ {
 
-        ErrorHandler.addError("Error Linia " + currentToken.getLine() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken());
+        ErrorHandler.addError("Error Linia " + currentToken.getLine() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken() + "'\n");
 
         skipTo(List.of(expectedToken), followers);
 
@@ -631,7 +650,7 @@ public class SyntaxAnalyzer {
 
     private void error(String expectedToken) /*throws SyntaxException*/ {
 
-        ErrorHandler.addError("Error Linia " + currentToken.getLine() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken());
+        ErrorHandler.addError("Error Linia " + currentToken.getLine() + ":\n\t" + "Error de sintaxis: Se esperaba '" + expectedToken + "' pero se encontró '" + currentToken.getToken() + "'\n");
 
         //throw new SyntaxException();
 

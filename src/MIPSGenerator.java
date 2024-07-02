@@ -29,7 +29,7 @@ public class MIPSGenerator {
 
         MIPScode = generateMIPS(TACsentences);
 
-        System.out.println("\n" + "MIPS CODE\n\n" + MIPScode);
+        //System.out.println("\n" + "MIPS CODE\n\n" + MIPScode);
 
 
         createMIPSfile(MIPScode, MIPSfilepath); //Create the code.asm file

@@ -41,10 +41,17 @@ public class SemanticAnalyzer {
     public static List<String> findTokensContainingValue(ParseTree node) {
         List<String> tokensContainingValue = new ArrayList<>();
         findTokensContainingValueHelper(node, "VALOR", tokensContainingValue);
+        findTokensContainingValueHelper(node, "CARACTER", tokensContainingValue);
+        //If it finds VALOR_ENTERO, VALOR_CARACTER or CARACTER' tokens, it will add them to the list
         return tokensContainingValue;
     }
 
     private static void findTokensContainingValueHelper(ParseTree node, String value, List<String> result) {
+
+        if (node == null) {
+            return;
+        }
+
         if (node.getToken() != null && node.getToken().contains(value)) {
             result.add(node.getToken());
         }
@@ -55,13 +62,17 @@ public class SemanticAnalyzer {
 
 
     public void checkAssignation(ParseTree parseTree, String scope, int line){
-        String key = parseTree.getChildren().get(1).getLexeme();
 
+        String key;
 
-        // IS a funcition?
-        SymbolTableEntry function = symbolTable.find(key);
-        if(function != null){
-            ErrorHandler.addError("In line " + line + ": can not assign a value to a function" + "\n");
+        //Variable assignation will always have children "ID" and "SENTENCIA_ID_SUBBLOQUE"
+        //Variable declaration with assignation will always have children "TIPO", "ID" and "DECLARACION_VARIABLE_PRIME"
+        if (parseTree.getChildren().size() == 2){
+            //checkAssignationVariable
+            key = parseTree.getChildren().get(0).getLexeme();
+        } else {
+            //checkDeclarationAndAssignationVariable
+            key = parseTree.getChildren().get(1).getLexeme();
         }
 
         // IS a variable
@@ -71,187 +82,40 @@ public class SemanticAnalyzer {
             if(entry != null){
             List<String> valors = findTokensContainingValue(parseTree);
             String type = entry.getType();
-            for(String token : valors){
-                if(type.equals("TIPO_ENTERO")){
-                    if(!token.equals("VALOR_ENTERO")){
-                        ErrorHandler.addError("In line " + line + ": "+ key +"type do not match. \n");
-                        break;
+                for(String token : valors) {
+                    if(type.equals("TIPO_ENTERO")){
+                        if(!token.equals("VALOR_ENTERO")){
+                            ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En la asignacion de '" + key + "' " + "los tipos de valor no coinciden \n");
+                            break;
+                        }
+                    }
+                    if(type.equals("TIPO_DECIMAL")){
+                        if(!token.equals("VALOR_DECIMAL")){
+                            ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En la asignacion de '" + key + "' " + "los tipos de valor no coinciden \n");
+                            break;
+                        }
+                    }
+                    if(type.equals("TIPO_CARACTER")){
+                        if(!token.equals("CARACTER'") && !token.equals("CARACTER") && !token.equals("TIPO_CARACTER")){
+                            ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En la asignacion de '" + key + "' " + "los tipos de valor no coinciden \n");
+                            break;
+                        }
                     }
                 }
-                if(type.equals("TIPO_DECIMAL")){
-                    if(!token.equals("VALOR_DECIMAL")){
-                        ErrorHandler.addError("In line " + line + ": "+ key +"type do not match. \n");
-                        break;
-                    }
-                }
-                if(type.equals("TIPO_CARACTER")){
-                    if(!token.equals("TIPO_CARACTER")){
-                        ErrorHandler.addError("In line " + line + ": "+ key +"type do not match. \n");
-                        break;
-                    }
-                }
-            }
             } else {
-                ErrorHandler.addError("In line " + line + ": "+ key +"do not exist. \n");
+                ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: " + key + " " +"no se ha declarado\n");
             }
         } else {
-            ErrorHandler.addError("In line " + line + ": "+ key +"do not exist. \n");
+            ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: " + key + " " +"no se ha declarado\n");
+
         }
     }
 
+    private void error(String line, String idRelatedToError, String errorMsg) {
 
-    private boolean matchType(String expectedType, String value) {
-        if(value == null || expectedType == null){
-            return false;
-        }
+        ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: " + idRelatedToError + " " + errorMsg + "\n");
 
-        switch (expectedType) {
-            case "INT" -> {
-                try {
-                    Integer.parseInt(value);
-                    return true;
-                } catch (NumberFormatException e) {
-                    return false;
-                }
-            }
-            case "FLOAT" -> {
-                try {
-                    Float.parseFloat(value);
-                    return true;
-                } catch (NumberFormatException e) {
-                    return false;
-                }
-            }
-            case "CHAR" -> {
-                return value.length() == 1;
-            }
-            default -> {
-                return false;
-            }
-        }
-    
     }
 
-
-    /*
-    private void analyzeDeclarations(ParseTree parseTree) {
-        if (parseTree.getType().equals("DECLARACION")) {
-            List<ParseTree> children = parseTree.getChildren();
-
-            if (children != null) {
-                String type = children.get(0).getValue();
-                String identifier = children.get(1).getValue();
-
-                if (identifier != null && type != null) {
-                    Declaration declaration = new Declaration();
-                    declaration.identifier = identifier;
-                    declaration.type = type;
-
-                    //find if the identifier is already declared
-                    boolean isDuplicate = false;
-                    for (Declaration d : declarations) {
-                        if (d.identifier.equals(identifier)) {
-                            // TODO: Throw error; identifier already declared
-                            System.out.println("Found duplicate declaration");
-                            isDuplicate = true;
-                            break;
-                        }
-                    }
-                    if (!isDuplicate) {
-                        declarations.add(declaration);
-                    }
-
-                   // IGUALACIO?
-                    if (children.get(2).getType().equals("Igualacion")){
-                        // IGUALACION -> EXPRESION -> Assignation Expression
-                        String expressionType = children.get(2).getChildren().get(1).getChildren().get(0).getType();
-
-                        // CASES -> Operació aritmetica, unaltre declaració, valor
-
-                        // Operació artimetica
-                        if (expressionType.equals("Producto") || expressionType.equals("Suma")){
-
-                        } else if (expressionType.equals("ID")){
-                            String id = children.get(2).getChildren().get(1).getChildren().get(0).getValue();
-
-                            for (Declaration d : declarations) {
-                                if (d.identifier.equals(id)){
-                                    if (d.type.equals(type)){
-                                        // correcte next;
-                                    } else{
-                                        // TODO: throw error: Not matching types
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                } else {
-                    //TODO: Throw error; invalid declaration Això ho hauriem de controlar? Ja ho controla el parser
-                    return;
-                }
-            } else {
-                //TODO: Throw error; invalid declaration Això ho hauriem de controlar? Ja ho controla el parser
-                return;
-            }
-
-            for (ParseTree child : children) {
-                analyzeDeclarations(child);
-            }
-        }
-    }
-
-    private void analyzeAssignations(ParseTree parseTree) {
-        if (parseTree.getType().equals("ASSIGNATION")) {
-            List<ParseTree> children = parseTree.getChildren();
-
-            if (children != null) {
-                String type = children.get(0).getValue();
-                String identifier = children.get(1).getValue();
-
-                if (identifier != null && type != null) {
-                    Declaration declaration = new Declaration();
-                    declaration.identifier = identifier;
-                    declaration.type = type;
-
-                    //find if the identifier is already declared
-                    boolean isDuplicate = false;
-                    for (Declaration d : declarations) {
-                        if (d.identifier.equals(identifier)) {
-                            // TODO: Throw error; identifier already declared
-                            System.out.println("Found duplicate declaration");
-                            isDuplicate = true;
-                            break;
-                        }
-                    }
-                    if (!isDuplicate) {
-                        declarations.add(declaration);
-                    }
-
-                    if (children.size() >= 3) {
-                        String value = children.get(3).getValue();
-
-                        if (!checkType(type, value)) {
-                            // TODO: Throw error; invalid type
-                            return;
-                        }
-                    }
-                } else {
-                    //TODO: Throw error; invalid declaration Això ho hauriem de controlar? Ja ho controla el parser
-                    return;
-                }
-            } else {
-                //TODO: Throw error; invalid declaration Això ho hauriem de controlar? Ja ho controla el parser
-                return;
-            }
-
-            for (ParseTree child : children) {
-                analyzeDeclarations(child);
-            }
-        }
-    }
-
-    */
 }
 

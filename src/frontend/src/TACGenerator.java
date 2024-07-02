@@ -53,7 +53,7 @@ public class TACGenerator {
 
         generateCode(parseTree);
 
-        System.out.println("\n" + "TAC CODE\n\n" + TACcode.toString());
+        //System.out.println("\n" + "TAC CODE\n\n" + TACcode.toString());
 
         createTACfile(TACcode.toString(), TACfilepath); //Create the code.tac file
 
