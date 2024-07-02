@@ -304,17 +304,52 @@ public class SyntaxAnalyzer {
         return caracterPrime;
     }
 
-
-
     // Production for <EXPRESION>
     private ParseTree expresion() {
 
         ParseTree expresion = new ParseTree("EXPRESION");
 
-        expresion.addChild(termino());
+        expresion.addChild(expresion_Resta());
         expresion.addChild(expresionPrime());
 
         return expresion;
+    }
+
+    // Production for <EXPRESION'>
+    private ParseTree expresionPrime() {
+
+        ParseTree expresionPrime = new ParseTree("EXPRESION'");
+
+        if (currentToken.equals("MAS")) {
+            expresionPrime.addChild(match(currentToken.getToken()));
+            expresionPrime.addChild(expresion_Resta());
+            expresionPrime.addChild(expresionPrime());
+        }
+
+        return expresionPrime;
+    }
+
+    private ParseTree expresion_Resta() {
+
+        ParseTree expresion = new ParseTree("EXPRESION_RESTA");
+
+        expresion.addChild(termino());
+        expresion.addChild(expresionPrime_Resta());
+
+        return expresion;
+    }
+
+    private ParseTree expresionPrime_Resta() {
+
+        ParseTree expresionPrime = new ParseTree("EXPRESION_RESTA'");
+
+        if (currentToken.equals("MENOS")) {
+            expresionPrime.addChild(match(currentToken.getToken()));
+            expresionPrime.addChild(termino());
+            expresionPrime.addChild(expresionPrime_Resta());
+        }
+
+        return expresionPrime;
     }
 
     // Production for <TERMINO>
@@ -322,7 +357,7 @@ public class SyntaxAnalyzer {
 
         ParseTree termino = new ParseTree("TERMINO");
 
-        termino.addChild(factor());
+        termino.addChild(termino_div());
         termino.addChild(terminoPrime());
 
         return termino;
@@ -333,27 +368,37 @@ public class SyntaxAnalyzer {
 
         ParseTree terminoPrime = new ParseTree("TERMINO'");
 
-        if (currentToken.equals("MULTIPLICACION") || currentToken.equals("DIVISION")) {
+        if (currentToken.equals("MULTIPLICACION")) {
             terminoPrime.addChild(match(currentToken.getToken()));
-            terminoPrime.addChild(factor());
+            terminoPrime.addChild(termino_div());
             terminoPrime.addChild(terminoPrime());
         }
 
         return terminoPrime;
     }
 
-    // Production for <EXPRESION'>
-    private ParseTree expresionPrime() {
+    private ParseTree termino_div() {
 
-        ParseTree expresionPrime = new ParseTree("EXPRESION'");
+        ParseTree termino = new ParseTree("TERMINO_DIV");
 
-        if (currentToken.equals("MAS") || currentToken.equals("MENOS")) {
-            expresionPrime.addChild(match(currentToken.getToken()));
-            expresionPrime.addChild(termino());
-            expresionPrime.addChild(expresionPrime());
+        termino.addChild(factor());
+        termino.addChild(terminoPrime_div());
+
+        return termino;
+    }
+
+    // Production for <TERMINO'>
+    private ParseTree terminoPrime_div() {
+
+        ParseTree terminoPrime = new ParseTree("TERMINO_DIV'");
+
+        if (currentToken.equals("DIVISION")) {
+            terminoPrime.addChild(match(currentToken.getToken()));
+            terminoPrime.addChild(factor());
+            terminoPrime.addChild(terminoPrime_div());
         }
 
-        return expresionPrime;
+        return terminoPrime;
     }
 
     // Production for <FACTOR>
@@ -377,6 +422,8 @@ public class SyntaxAnalyzer {
         return factor;
     }
 
+
+
     // Production for <LLAMADA_FUNCION>
     private ParseTree llamadaFuncion() {
 
@@ -395,9 +442,7 @@ public class SyntaxAnalyzer {
         ParseTree llamadaFuncionPrime = new ParseTree("LLAMADA_FUNCION'");
 
         if (currentToken.equals("PARENTESIS_ABRIR")) {
-            llamadaFuncionPrime.addChild(match("PARENTESIS_ABRIR"));
-            llamadaFuncionPrime.addChild(parametrosLlamadaFuncion());
-            llamadaFuncionPrime.addChild(match("PARENTESIS_CERRAR"));
+            llamadaFuncionPrime.addChild(llamadaFuncion());
         }
 
         return llamadaFuncionPrime;
