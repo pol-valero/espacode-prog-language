@@ -7,16 +7,17 @@ import symbols.SymbolTableEntry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SemanticAnalyzer {
     private SymbolTable symbolTable;
+    int line = 0;
 
-
+    // Constructor
     public SemanticAnalyzer() {
         this.symbolTable = new SymbolTable();
         this.symbolTable.addFunctionEntry(null, "main", 0);
     }
-
     public String addPrincipal(int line){
         String type= "VACIO";
         String key = "PRINCIPAL";
@@ -24,23 +25,25 @@ public class SemanticAnalyzer {
         symbolTable.addFunctionEntry(type,key, line);
         return key;
     }
-
     public String addFunction(ParseTree parseTree, int line ) {
-        String type = parseTree.getChildren().get(0).getChildren().get(0).getChildren().get(0).getToken();
+        String type = "";
+        if (parseTree.getChildren().get(0).getChildren().get(0).getChildren().isEmpty()){
+            type = parseTree.getChildren().get(0).getChildren().get(0).getToken();
+        }else{
+            type = parseTree.getChildren().get(0).getChildren().get(0).getChildren().get(0).getToken();
+        }
+
         String key = parseTree.getChildren().get(1).getLexeme();
 
         symbolTable.addFunctionEntry(type, key, line);
         return key;
     }
-
     public void addEntry(ParseTree parseTree, String scope, int line){
         String type = parseTree.getChildren().get(0).getChildren().get(0).getToken();
         String key = parseTree.getChildren().get(1).getLexeme();
 
        symbolTable.find(scope).addEntryToScope(type, key, line);
     }
-
-
     public static List<String> findTokensContainingValue(ParseTree node) {
         List<String> tokensContainingValue = new ArrayList<>();
         findTokensContainingValueHelper(node, "VALOR_ENTERO", tokensContainingValue);
@@ -81,19 +84,28 @@ public class SemanticAnalyzer {
         }
 
         if (node.getToken() != null && node.getToken().equals("ID")) {
+            // Check if the variable is a function
             variables.add(node.getLexeme());
         }
-        for (ParseTree child : node.getChildren()) {
-            findVariablesHelper(child, variables);
-        }
 
+        List<ParseTree> children = node.getChildren();
+
+        if (children.size() < 2 || !children.get(1).getToken().equals("LLAMADA_FUNCION'") || children.get(1).getChildren().size() == 0) {
+            for (ParseTree child : children) {
+                findVariablesHelper(child, variables);
+            }
+        }else{
+            checkFunctionExists(children.get(0).getLexeme());
+        }
     }
 
-
-
     public void checkAssignation(ParseTree parseTree, String scope, int line){
+        this.line = line;
+        List<String> variables = findVariables(parseTree);
+        checkIfVariableExists(variables, scope, line);
 
         String key;
+
 
         //Variable assignation will always have children "ID" and "SENTENCIA_ID_SUBBLOQUE"
         //Variable declaration with assignation will always have children "TIPO", "ID" and "DECLARACION_VARIABLE_PRIME"
@@ -136,7 +148,7 @@ public class SemanticAnalyzer {
                 }
 
                 //Check if the variables in the assignation have the same type as the variable that is left of the assignation
-                List<String> variables = findVariables(parseTree);
+
 
                 for(String variable : variables){
                     SymbolTableEntry entry2 = functionScope.getSymbolTable().find(variable);
@@ -157,6 +169,103 @@ public class SemanticAnalyzer {
         }
     }
 
+    public boolean checkIfVariableExists(List<String> variables ,String scope, int line){
+        SymbolTableEntry functionScope = symbolTable.find(scope);
+        for(String variable : variables){
+            SymbolTableEntry entry = functionScope.getSymbolTable().find(variable);
+            if(entry == null){
+                ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: " + variable + " " +"no se ha declarado\n");
+                return false;
+            }
+        }
+        return true;
+    }
 
+    public void checkIfStatement (ParseTree parseTree, String scope, int line){
+        List<String> variables = findVariables(parseTree);
+        checkIfVariableExists(variables, scope, line);
+        // Check if the condition it's all the same type
+        String type = "";
+        SymbolTableEntry functionScope = symbolTable.find(scope);
+        if (!variables.isEmpty()){
+            SymbolTableEntry entry = functionScope.getSymbolTable().find(variables.get(0));
+            type = entry.getType();
+            for(String variable : variables){
+                entry = functionScope.getSymbolTable().find(variable);
+                if(!entry.getType().equals(type)){
+                    ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En la condicion del if " + "los tipos de valor no coinciden \n");
+                    break;
+                }
+            }
+        }
+        // Check if the condition it's all the same type
+        List<String> valors = findTokensContainingValue(parseTree);
+        if (valors.size() > 0){
+            if (type.equals("")){
+                type = functionScope.getSymbolTable().find(valors.get(0)).getType();
+            }else{
+                if (type.equals("TIPO_ENTERO")){
+                    type = "VALOR_ENTERO";
+                }else if (type.equals("TIPO_DECIMAL")){
+                    type = "VALOR_DECIMAL";
+                }
+            }
+            for(String token : valors) {
+                if(!token.equals(type)){
+                    ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En la condicion del if " + "los tipos de valor no coinciden \n");
+                    break;
+                }
+            }
+        }
+    }
+    public void checkReturnStatment(ParseTree parseTree, String scoope, int line){
+        //Check if the return is the same type as the function
+        SymbolTableEntry functionScope = symbolTable.find(scoope);
+        String type = functionScope.getType();
+        List<String> valors = findTokensContainingValue(parseTree);
+        for(String token : valors) {
+            if(type.equals("TIPO_ENTERO")){
+                if(!token.equals("VALOR_ENTERO")){
+                    ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En el return " + "los tipos de valor no coinciden \n");
+                    break;
+                }
+            }
+            if(type.equals("TIPO_DECIMAL")){
+                if(!token.equals("VALOR_DECIMAL")){
+                    ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En el return " + "los tipos de valor no coinciden \n");
+                    break;
+                }
+            }
+            if(type.equals("TIPO_CARACTER")){
+                if(!token.equals("CARACTER'")){
+                    ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: En el return " + "los tipos de valor no coinciden \n");
+                    break;
+                }
+            }
+        }
+        functionScope.setHasReturn();
+    }
+    public void checkReturns(){
+        //get all scopes
+        Map<String, SymbolTableEntry> scopes = symbolTable.getTable();
+        for (Map.Entry<String, SymbolTableEntry> entry : scopes.entrySet()) {
+            SymbolTableEntry scope = entry.getValue();
+            if (!scope.hasReturn()){
+                ErrorHandler.addError("Error de semantica: La funcion " + scope.getKey() + " no tiene un return\n");
+            }
+        }
+    }
+    public void checkFunctionExists(String key){
+        SymbolTableEntry entry = symbolTable.find(key);
+        if(entry == null){
+            ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: La funcion " + key + " no se ha declarado\n");
+        }
+    }
+    public void checkFunctionCall(ParseTree parseTree, String scope, int line){
+        this.line = line;
+        //Check if the function exists
+        String key = parseTree.getChildren().get(0).getLexeme();
+        checkFunctionExists(key);
+    }
 }
 

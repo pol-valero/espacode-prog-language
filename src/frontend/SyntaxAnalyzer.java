@@ -47,6 +47,11 @@ public class SyntaxAnalyzer {
 
         codigo.addChild(funciones(funcionesFollowers));
         codigo.addChild(principal(followers));
+        try{
+            semanticAnalyzer.checkReturns();
+        }catch (Exception e) {
+            //This is already handled by parser (a syntax error will be displayed)
+        }
 
         return codigo;
 
@@ -213,13 +218,22 @@ public class SyntaxAnalyzer {
             sentenciaSubbloque.addChild(match("ID"));
             sentenciaSubbloque.addChild(sentenciaIDsubbloque(followers));
 
-            try {
+            if (!sentenciaSubbloque.getChildren().get(1).getChildren().get(0).getToken().equals("LLAMADA_FUNCION")){
+                try {
 
-                semanticAnalyzer.checkAssignation(sentenciaSubbloque, scope, currentToken.getLine());
+                    semanticAnalyzer.checkAssignation(sentenciaSubbloque, scope, currentToken.getLine());
 
-            } catch (Exception e){
-                //This is already handled by parser (a syntax error will be displayed)
+                } catch (Exception e){
+                    //This is already handled by parser (a syntax error will be displayed)
+                }
+            }else{
+                try{
+                    semanticAnalyzer.checkFunctionCall(sentenciaSubbloque, scope, currentToken.getLine());
+                } catch (Exception e){
+                    //This is already handled by parser (a syntax error will be displayed)
+                }
             }
+
 
         } else if (currentToken.equals("MIENTRAS")) {
             sentenciaSubbloque.addChild(mientrasExpresion(followers));
@@ -525,6 +539,11 @@ public class SyntaxAnalyzer {
         retornoExpresion.addChild(match("RETORNO"));
         retornoExpresion.addChild(expresion());
         retornoExpresion.addChild(match("PUNTO_Y_COMA"));
+        try {
+            semanticAnalyzer.checkReturnStatment(retornoExpresion, scope, currentToken.getLine());
+        }catch (Exception e){
+            //This is already handled by parser (a syntax error will be displayed)
+        }
 
         return retornoExpresion;
     }
@@ -587,8 +606,14 @@ public class SyntaxAnalyzer {
         siExpresion.addChild(match("PARENTESIS_ABRIR"));
         siExpresion.addChild(comparacion(List.of("PARENTESIS_CERRAR")));
         siExpresion.addChild(match("PARENTESIS_CERRAR"));
+        try {
+            semanticAnalyzer.checkIfStatement(siExpresion, scope, currentToken.getLine());
+        } catch (Exception e){
+            //This is already handled by parser (a syntax error will be displayed)
+        }
         siExpresion.addChild(bloque(bloqueFollowers));
         siExpresion.addChild(sinoExpresion(followers));
+
 
         return siExpresion;
     }

@@ -7,6 +7,7 @@ public class SymbolTableEntry {
     private String type;
     private Integer line;
     private boolean isFunction;
+    private boolean hasReturn;
     private SymbolTable symbolTable;
 
     public SymbolTableEntry(String key, String type, int line) {
@@ -22,6 +23,17 @@ public class SymbolTableEntry {
         this.isFunction = isFunction;
         this.line = line;
         this.symbolTable = new SymbolTable();
+        if (type == null || type.equals("VACIO")){
+            this.hasReturn = true;
+        } else {
+            this.hasReturn = false;
+        }
+    }
+    public boolean hasReturn(){
+        return this.hasReturn;
+    }
+    public void setHasReturn(){
+        this.hasReturn = true;
     }
 
     public String getKey() {
