@@ -23,4 +23,4 @@ L1:
 principal:
 	writeParam 0 1
 	writeParam 1 2
-	t9 = call test
+	t0 = call test

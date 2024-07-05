@@ -59,4 +59,4 @@ $principal:
 	lw $a2, -52($sp)
 	lw $a3, -56($sp)
 	lw $ra, -60($sp)
-	move $t9, $v0
+	move $t0, $v0

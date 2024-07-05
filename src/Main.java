@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String codeFilePath = "examples/alello23.ps";
+        String codeFilePath = "examples/example3.ps";
 
         String TACfilepath = "generatedCode/code.tac";
         String MIPSfilepath = "generatedCode/code.asm";

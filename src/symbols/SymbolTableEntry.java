@@ -10,6 +10,8 @@ public class SymbolTableEntry {
     private boolean hasReturn;
     private SymbolTable symbolTable;
 
+    private int numParams;
+
     public SymbolTableEntry(String key, String type, int line) {
         this.key = key;
         this.type = type;
@@ -34,6 +36,14 @@ public class SymbolTableEntry {
     }
     public void setHasReturn(){
         this.hasReturn = true;
+    }
+
+    public void setNumParams(int numParams){
+        this.numParams = numParams;
+    }
+
+    public int getNumParams(){
+        return this.numParams;
     }
 
     public String getKey() {

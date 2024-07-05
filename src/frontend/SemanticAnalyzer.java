@@ -13,10 +13,12 @@ public class SemanticAnalyzer {
     private SymbolTable symbolTable;
     int line = 0;
 
+    int callingFunctionParametersNum = 0;
+
     // Constructor
     public SemanticAnalyzer() {
         this.symbolTable = new SymbolTable();
-        this.symbolTable.addFunctionEntry(null, "main", 0);
+        //this.symbolTable.addFunctionEntry(null, "main", 0);
     }
     public String addPrincipal(int line){
         String type= "VACIO";
@@ -25,12 +27,25 @@ public class SemanticAnalyzer {
         symbolTable.addFunctionEntry(type,key, line);
         return key;
     }
+
+    public void incrementFunctionParametersNum(String functionName) {
+        SymbolTableEntry entry = symbolTable.find(functionName);
+        if (entry != null) {
+            //We save the number of parameters of a function so that when calling the function we can check if the number of parameters is correct
+           entry.setNumParams(entry.getNumParams() + 1);
+        }
+
+    }
     public String addFunction(ParseTree parseTree, int line ) {
         String type = "";
         if (parseTree.getChildren().get(0).getChildren().get(0).getChildren().isEmpty()){
             type = parseTree.getChildren().get(0).getChildren().get(0).getToken();
         }else{
             type = parseTree.getChildren().get(0).getChildren().get(0).getChildren().get(0).getToken();
+        }
+
+        if (type.equals("TIPO_DECIMAL") || type.equals("TIPO_CARACTER")) {
+            ErrorHandler.addError("Aviso en linia " + line + ":\n\t" + "Actualmente no estan implementados los " + type + " en TAC ni MIPS. Se procede a no generar codigo intermedio ni codigo maquina.\n");
         }
 
         String key = parseTree.getChildren().get(1).getLexeme();
@@ -41,6 +56,10 @@ public class SemanticAnalyzer {
     public void addEntry(ParseTree parseTree, String scope, int line){
         String type = parseTree.getChildren().get(0).getChildren().get(0).getToken();
         String key = parseTree.getChildren().get(1).getLexeme();
+
+        if (type.equals("TIPO_DECIMAL") || type.equals("TIPO_CARACTER")) {
+            ErrorHandler.addError("Aviso en linia " + line + ":\n\t" + "Actualmente no estan implementados los " + type + " en TAC ni MIPS. Se procede a no generar codigo intermedio ni codigo maquina.\n");
+        }
 
        symbolTable.find(scope).addEntryToScope(type, key, line);
     }
@@ -102,6 +121,14 @@ public class SemanticAnalyzer {
     public void checkAssignation(ParseTree parseTree, String scope, int line){
         this.line = line;
         List<String> variables = findVariables(parseTree);
+
+        if (parseTree.getToken().equals("DECLARACION_VARIABLE")) {
+            if (parseTree.getChildren().get(0).getChildren().get(0).getToken().equals("TIPO_CARACTER")) {
+                return;
+                //We do not call checkIfVariableExists, to avoid mistaking a character with a variable
+            }
+        }
+
         checkIfVariableExists(variables, scope, line);
 
         String key;
@@ -223,6 +250,12 @@ public class SemanticAnalyzer {
         SymbolTableEntry functionScope = symbolTable.find(scoope);
         String type = functionScope.getType();
         List<String> valors = findTokensContainingValue(parseTree);
+
+        if (type.equals("VACIO")) {
+            ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: No se admite RETORNO si el tipo de la funcion es VACIO \n");
+            return;
+        }
+
         for(String token : valors) {
             if(type.equals("TIPO_ENTERO")){
                 if(!token.equals("VALOR_ENTERO")){
@@ -255,17 +288,36 @@ public class SemanticAnalyzer {
             }
         }
     }
-    public void checkFunctionExists(String key){
+    public boolean checkFunctionExists(String key){
         SymbolTableEntry entry = symbolTable.find(key);
         if(entry == null){
             ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: La funcion " + key + " no se ha declarado\n");
+            return false;
         }
+        return true;
     }
     public void checkFunctionCall(ParseTree parseTree, String scope, int line){
         this.line = line;
         //Check if the function exists
         String key = parseTree.getChildren().get(0).getLexeme();
         checkFunctionExists(key);
+    }
+
+    public void incrementCallingFunctionParametersNum (String functionName) {
+        callingFunctionParametersNum++;
+    }
+
+    public void resetCallingFunctionParametersNum(String functionName) {
+        callingFunctionParametersNum = 0;
+    }
+
+    public void compareCallingFunctionParametersNumWithFunctionDeclaration(String functionName, int line) {
+        SymbolTableEntry entry = symbolTable.find(functionName);
+        if (entry != null) {
+            if (entry.getNumParams() != callingFunctionParametersNum) {
+                ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error de semantica: El numero de parametros de la funcion " + functionName + " no coincide con el numero de parametros de la llamada\n");
+            }
+        }
     }
 }
 

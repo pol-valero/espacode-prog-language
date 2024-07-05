@@ -134,6 +134,8 @@ public class SyntaxAnalyzer {
 
             try{
                 semanticAnalyzer.addEntry(parametrosDeclaracionFuncion, this.scope, this.currentToken.getLine());
+
+                semanticAnalyzer.incrementFunctionParametersNum(this.scope);
             } catch (Exception e){
                 //This is already handled by parser (a syntax error will be displayed)
             }
@@ -161,6 +163,8 @@ public class SyntaxAnalyzer {
                 parametro.addChild(parametrosDeclaracionFuncionPrime.getChildren().get(2));
 
                 semanticAnalyzer.addEntry(parametro, this.scope, this.currentToken.getLine());
+
+                semanticAnalyzer.incrementFunctionParametersNum(this.scope);
             } catch (Exception e){
                 //This is already handled by parser (a syntax error will be displayed)
             }
@@ -218,20 +222,33 @@ public class SyntaxAnalyzer {
             sentenciaSubbloque.addChild(match("ID"));
             sentenciaSubbloque.addChild(sentenciaIDsubbloque(followers));
 
-            if (!sentenciaSubbloque.getChildren().get(1).getChildren().get(0).getToken().equals("LLAMADA_FUNCION")){
-                try {
-
-                    semanticAnalyzer.checkAssignation(sentenciaSubbloque, scope, currentToken.getLine());
-
-                } catch (Exception e){
-                    //This is already handled by parser (a syntax error will be displayed)
+            try {
+                if (sentenciaSubbloque.getChildren().get(1).getChildren().get(0).getChildren().size() > 0) {
+                    //Check if the number of parameters in the function call matches the number of parameters in the function declaration (if it exists
+                    semanticAnalyzer.compareCallingFunctionParametersNumWithFunctionDeclaration(sentenciaSubbloque.getChildren().get(0).getLexeme(), currentToken.getLine());
                 }
-            }else{
-                try{
-                    semanticAnalyzer.checkFunctionCall(sentenciaSubbloque, scope, currentToken.getLine());
-                } catch (Exception e){
-                    //This is already handled by parser (a syntax error will be displayed)
+            } catch (Exception e){
+                //This is already handled by parser (a syntax error will be displayed)
+            }
+
+            try {
+                if (!sentenciaSubbloque.getChildren().get(1).getChildren().get(0).getToken().equals("LLAMADA_FUNCION")) {
+                    try {
+
+                        semanticAnalyzer.checkAssignation(sentenciaSubbloque, scope, currentToken.getLine());
+
+                    } catch (Exception e) {
+                        //This is already handled by parser (a syntax error will be displayed)
+                    }
+                } else {
+                    try {
+                        semanticAnalyzer.checkFunctionCall(sentenciaSubbloque, scope, currentToken.getLine());
+                    } catch (Exception e) {
+                        //This is already handled by parser (a syntax error will be displayed)
+                    }
                 }
+            } catch (Exception e){
+                //This is already handled by parser (a syntax error will be displayed)
             }
 
 
@@ -464,6 +481,16 @@ public class SyntaxAnalyzer {
         if (currentToken.equals("ID")) {
             factor.addChild(match("ID"));
             factor.addChild(llamadaFuncionPrime());
+
+            try {
+                if (factor.getChildren().get(1).getChildren().size() > 0) {
+                    //Check if the number of parameters in the function call matches the number of parameters in the function declaration (if it exists
+                    semanticAnalyzer.compareCallingFunctionParametersNumWithFunctionDeclaration(factor.getChildren().get(0).getLexeme(), currentToken.getLine());
+                }
+            } catch (Exception e){
+                //This is already handled by parser (a syntax error will be displayed)
+            }
+
         } else if (currentToken.equals("VALOR_ENTERO") || currentToken.equals("VALOR_DECIMAL")) {
             factor.addChild(match(currentToken.getToken()));
         } else if (currentToken.equals("PARENTESIS_ABRIR")) {
@@ -485,6 +512,13 @@ public class SyntaxAnalyzer {
         ParseTree llamadaFuncion = new ParseTree("LLAMADA_FUNCION");
 
         llamadaFuncion.addChild(match("PARENTESIS_ABRIR"));
+
+        try{
+            semanticAnalyzer.resetCallingFunctionParametersNum(this.scope);
+        } catch (Exception e){
+            //This is already handled by parser (a syntax error will be displayed)
+        }
+
         llamadaFuncion.addChild(parametrosLlamadaFuncion());
         llamadaFuncion.addChild(match("PARENTESIS_CERRAR"));
 
@@ -511,6 +545,13 @@ public class SyntaxAnalyzer {
         if (currentToken.equals("ID") || currentToken.equals("VALOR_ENTERO") || currentToken.equals("VALOR_DECIMAL") ||
                 currentToken.equals("PARENTESIS_ABRIR")) {
             parametrosLlamadaFuncion.addChild(expresion());
+
+            try{
+                semanticAnalyzer.incrementCallingFunctionParametersNum(this.scope);
+            } catch (Exception e){
+                //This is already handled by parser (a syntax error will be displayed)
+            }
+
             parametrosLlamadaFuncion.addChild(parametrosLlamadaFuncionPrime());
         }
 
@@ -525,6 +566,13 @@ public class SyntaxAnalyzer {
         if (currentToken.equals("COMA")) {
             parametrosLlamadaFuncionPrime.addChild(match("COMA"));
             parametrosLlamadaFuncionPrime.addChild(expresion());
+
+            try{
+                semanticAnalyzer.incrementCallingFunctionParametersNum(this.scope);
+            } catch (Exception e){
+                //This is already handled by parser (a syntax error will be displayed)
+            }
+
             parametrosLlamadaFuncionPrime.addChild(parametrosLlamadaFuncionPrime());
         }
 

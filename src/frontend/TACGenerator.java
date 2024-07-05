@@ -74,6 +74,7 @@ public class TACGenerator {
 
     // <FUNCION> ::= <TIPO_FUNCION> ID PARENTESIS_ABRIR  <PARAMETROS_DECLARACION_FUNCION> PARENTESIS_CERRAR <BLOQUE>
     private void generateFunction(ParseTree parseTree) {
+        tempCounter = 0;
         tempVariables.clear();
         String functionType = generateFunctionType(parseTree.getChildren().get(0));
         String functionName = parseTree.getChildren().get(1).getLexeme();
@@ -407,6 +408,7 @@ public class TACGenerator {
     }
     // <PRINCIPAL> ::= PRINCIPAL PARENTESIS_ABRIR PARENTESIS_CERRAR <BLOQUE>
     private void generateMain(ParseTree parseTree) {
+        tempCounter = 0;
         tempVariables.clear();
         TACcode.append("\nprincipal:\n");
         generateBlock(parseTree.getChildren().get(3));
