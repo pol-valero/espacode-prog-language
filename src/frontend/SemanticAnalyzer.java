@@ -33,6 +33,10 @@ public class SemanticAnalyzer {
         if (entry != null) {
             //We save the number of parameters of a function so that when calling the function we can check if the number of parameters is correct
            entry.setNumParams(entry.getNumParams() + 1);
+
+           if (entry.getNumParams() > 4) {
+               ErrorHandler.addError("Error Linia " + line + ":\n\t" + "Error: La funcion " + functionName + " tiene mas de 4 parametros, MIPS esta implementado con un maximo de 4 parametros\n");
+           }
         }
 
     }

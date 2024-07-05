@@ -1,26 +1,25 @@
 
-test:
+fibonacci:
 	readParam 0 t0
-	readParam 1 t1
-	t2 = t0 + 1
-	t0 = t2
-	t3 = t1 + 2
-	t1 = t3
-	t4 = 0
+	if t0 >= 2 goto L0
+	return t0
 L0:
-	if t4 >= 3 goto L1
-	t5 = t0 + 1
-	t0 = t5
-	t6 = t1 + 2
-	t1 = t6
-	t7 = t4 + 1
-	t4 = t7
-	goto L0
-L1:
-	t8 = t0 + t1
-	return t8
+	t1 = 0
+	t2 = 0
+	t3 = 0
+	t4 = t0 - 1
+	t3 = t4
+	t5 = 0
+	t6 = t0 - 2
+	t5 = t6
+	writeParam 0 t3
+	t1 = call fibonacci
+	writeParam 0 t5
+	t2 = call fibonacci
+	t7 = t1 + t2
+	return t7
 
 principal:
-	writeParam 0 1
-	writeParam 1 2
-	t0 = call test
+	t0 = 0
+	writeParam 0 13
+	t0 = call fibonacci

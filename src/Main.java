@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String codeFilePath = "examples/example3.ps";
+        String codeFilePath = "examples/fibonacciRecSimp.ps";
 
         String TACfilepath = "generatedCode/code.tac";
         String MIPSfilepath = "generatedCode/code.asm";
@@ -28,11 +28,13 @@ public class Main {
             TACGenerator tacGenerator = new TACGenerator();
             tacGenerator.generateTAC(parseTree, TACfilepath);
 
-            MIPSGenerator mipsGenerator = new MIPSGenerator();
-            mipsGenerator.TACtoMIPS(MIPSfilepath, TACfilepath);
+
 
             if (ErrorHandler.hasTACgenErrors()){
                 System.out.println(ErrorHandler.getTACgenErrors());
+            } else {
+                MIPSGenerator mipsGenerator = new MIPSGenerator();
+                mipsGenerator.TACtoMIPS(MIPSfilepath, TACfilepath);
             }
 
             if (ErrorHandler.hasMIPSgenErrors()){

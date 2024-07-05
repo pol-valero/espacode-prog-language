@@ -81,6 +81,10 @@ public class TACGenerator {
         TACcode.append("\n" + functionName + ":\n");
         generateFunctionParameters(parseTree.getChildren().get(3));
         generateBlock(parseTree.getChildren().get(5));
+
+        if (tempCounter > 10) {
+            ErrorHandler.addTACgenErrors("\nNo quedan mas registros disponibles para almacenar variables temporales (t0-t9). No se procede a generar el codigo MIPS\n");
+        }
     }
     // <TIPO_FUNCION> ::= <TIPO> | VACIO
     private String generateFunctionType(ParseTree parseTree) {
@@ -412,6 +416,10 @@ public class TACGenerator {
         tempVariables.clear();
         TACcode.append("\nprincipal:\n");
         generateBlock(parseTree.getChildren().get(3));
+
+        if (tempCounter > 10) {
+            ErrorHandler.addTACgenErrors("\nNo quedan mas registros disponibles para almacenar variables temporales (t0-t9). No se procede a generar el codigo MIPS\n");
+        }
     }
 }
 
