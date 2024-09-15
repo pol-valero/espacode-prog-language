@@ -22,6 +22,7 @@ We also implemented from scratch the compiler for our newly created EspaCode lan
 - Variables (floats, chars, integers)
 - Functions (with or without arguments)
 - If, Else, While, For statements
+- Operations (*, /, +, -) with several components. Each operation has a stablished priority over the others.  
 
 ## Compiler features
 - Multiple lexical error detection support
@@ -45,8 +46,10 @@ The different code examples for the language can be found in the "examples" fold
 
 To choose which of the code examples you want to compile, go to the "Main" class and modify the name of the file you want to compile in the "codeFilePath" variable located at line 10.
 
+REMARK: You can also create your own code examples from scratch, as long as they comply with the EspaCode language grammar. The compiler has strong error detection and it will state which line/s have errors and will also indicate the reason behind the error. 
+
 ### How to test a code result once we have the generated MIPS code?
-We must use a MIPS simulator like "Mars 4.5" to run the MIPS code. As no "print" function is available in the EspaCode language, the value of the register associated with the result variable has to be checked on "Mars 4.5"
+We must use a MIPS simulator like "Mars 4.5" to run the MIPS code. As no "print" function is available in the EspaCode language, the value of the register (t0-t9) associated with the result variable has to be checked on "Mars 4.5"
 
 https://courses.missouristate.edu/KenVollmar/MARS/download.htm
 
